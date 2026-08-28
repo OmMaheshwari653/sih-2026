@@ -1,16 +1,71 @@
 @import "tailwindcss";
 
 @theme {
-  --color-gov-navy: #0b2b5c;
-  --color-gov-navy-dark: #082147;
-  --color-gov-blue: #123f7f;
-  --color-gov-accent: #1a56a8;
-  --color-gov-saffron: #ff9933;
-  --color-gov-green: #138808;
-  --color-page: #f1f4f9;
+  /* Brand — Government of India / Legal Metrology */
+  --color-ink: #101828;
+  --color-ink-muted: #5a6474;
+  --color-navy: #0b2b5c;
+  --color-navy-900: #071c3d;
+  --color-navy-700: #123f7f;
+  --color-navy-500: #1a56a8;
+  --color-saffron: #ff9933;
+  --color-india-green: #138808;
+  --color-line: #d5dbe5;
+  --color-line-soft: #e6eaf1;
+  --color-canvas: #eef1f6;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f7f9fc;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-gov), Georgia, "Times New Roman", serif;
+  --font-deva: var(--font-deva), var(--font-inter), sans-serif;
+
+  --radius-gov: 4px;
 }
 
-body {
-  background-color: var(--color-page);
-  color: #1f2937;
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "tnum" 0;
+  }
+
+  ::selection {
+    background: #0b2b5c;
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-navy-500);
+    outline-offset: 2px;
+  }
+}
+
+@utility tricolor-rule {
+  background: linear-gradient(
+    to right,
+    var(--color-saffron) 0 33.33%,
+    #ffffff 33.33% 66.66%,
+    var(--color-india-green) 66.66% 100%
+  );
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Faint guilloche-style paper texture used on official surfaces */
+@utility gov-paper {
+  background-color: var(--color-surface);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(11, 43, 92, 0.022) 0 2px,
+    transparent 2px 7px
+  );
 }

@@ -1,116 +1,63 @@
 import { ArrowRight } from "lucide-react";
-
-const applications = [
-  {
-    id: "APP2025001245",
-    instrument: "Digital Weighing Scale",
-    type: "Weighing",
-    date: "18 May 2025",
-    status: "Pending",
-    nextAction: "Document Verification",
-  },
-  {
-    id: "APP2025001187",
-    instrument: "Electronic Weighing Machine",
-    type: "Weighing",
-    date: "15 May 2025",
-    status: "Scheduled",
-    nextAction: "Verification on 22 May 2025",
-  },
-  {
-    id: "APP2025001102",
-    instrument: "Fuel Dispenser",
-    type: "Measuring",
-    date: "10 May 2025",
-    status: "Under Verification",
-    nextAction: "-",
-  },
-  {
-    id: "APP2025000987",
-    instrument: "Platform Scale",
-    type: "Weighing",
-    date: "05 May 2025",
-    status: "Verified",
-    nextAction: "Download Certificate",
-  },
-  {
-    id: "APP2025000765",
-    instrument: "Milk Meter",
-    type: "Measuring",
-    date: "28 Apr 2025",
-    status: "Rejected",
-    nextAction: "Rectification Required",
-  },
-];
-
-const statusStyles: Record<string, string> = {
-  Pending: "bg-amber-50 text-amber-700 border-amber-200",
-  Scheduled: "bg-sky-50 text-sky-700 border-sky-200",
-  "Under Verification": "bg-violet-50 text-violet-700 border-violet-200",
-  Verified: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  Rejected: "bg-red-50 text-red-700 border-red-200",
-};
+import Link from "next/link";
+import { StatusBadge } from "@/components/ui/Badge";
+import { Panel } from "@/components/ui/Panel";
+import { TableWrap, Tbody, Td, Thead } from "@/components/ui/Table";
+import { applications, rupees } from "@/lib/data";
 
 const columns = [
   "Application ID",
-  "Instrument Name",
-  "Type",
-  "Application Date",
+  "Instrument",
+  "Nature of request",
+  "Filed on",
+  "Fee",
   "Status",
-  "Next Action",
+  "Next action",
 ];
 
-const RecentApplications = () => {
-  return (
-    <section className="rounded-lg border border-slate-200 bg-white">
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-900">
-          Recent Applications
-        </h2>
-        <a
-          className="flex items-center gap-1 text-xs font-medium text-gov-accent hover:underline"
-          href="#applications"
-        >
-          View All Applications
-          <ArrowRight className="size-3.5" aria-hidden />
-        </a>
-      </div>
-
-      <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-3xl text-left text-xs">
-          <thead className="bg-slate-50 text-slate-600">
-            <tr>
-              {columns.map((column) => (
-                <th className="px-4 py-2.5 font-semibold" key={column}>
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700">
-            {applications.map((application) => (
-              <tr key={application.id}>
-                <td className="px-4 py-3 font-medium text-slate-900">
-                  {application.id}
-                </td>
-                <td className="px-4 py-3">{application.instrument}</td>
-                <td className="px-4 py-3">{application.type}</td>
-                <td className="px-4 py-3">{application.date}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex rounded border px-2 py-0.5 text-[11px] font-medium ${statusStyles[application.status]}`}
-                  >
-                    {application.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">{application.nextAction}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  );
-};
+const RecentApplications = () => (
+  <Panel
+    action={
+      <Link
+        className="inline-flex items-center gap-1 text-xs font-semibold text-navy-500 hover:underline"
+        href="/business/instruments"
+      >
+        View all applications
+        <ArrowRight className="size-3.5" aria-hidden />
+      </Link>
+    }
+    bodyClassName=""
+    hint="Requests filed against your registered instruments"
+    title="Recent applications"
+  >
+    <TableWrap minWidth="min-w-4xl">
+      <Thead columns={columns} />
+      <Tbody>
+        {applications.map((application) => (
+          <tr className="hover:bg-surface-alt" key={application.id}>
+            <Td className="num font-semibold text-ink">{application.id}</Td>
+            <Td>
+              <span className="block font-medium text-ink">
+                {application.instrument}
+              </span>
+              <span className="num block text-[11px] text-ink-muted">
+                {application.instrumentId}
+              </span>
+            </Td>
+            <Td className="text-ink-muted">{application.type}</Td>
+            <Td className="num text-ink-muted">{application.filedOn}</Td>
+            <Td className="num">{rupees(application.fee)}</Td>
+            <Td>
+              <StatusBadge status={application.status} />
+            </Td>
+            <Td className="max-w-64 text-ink-muted">
+              {application.nextAction}
+            </Td>
+          </tr>
+        ))}
+      </Tbody>
+    </TableWrap>
+  </Panel>
+);
 
 export default RecentApplications;

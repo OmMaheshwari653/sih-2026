@@ -1,43 +1,66 @@
 import {
-  CreditCard,
+  CalendarPlus,
   FileCheck2,
-  FilePlus2,
-  Megaphone,
-  Scale,
+  PlusSquare,
+  QrCode,
+  ReceiptIndianRupee,
+  RotateCcw,
 } from "lucide-react";
+import Link from "next/link";
+import { Panel } from "@/components/ui/Panel";
 
 const actions = [
-  { label: "Apply for Verification", icon: FilePlus2 },
-  { label: "My Instruments", icon: Scale },
-  { label: "View Certificates", icon: FileCheck2 },
-  { label: "Make Payment", icon: CreditCard },
-  { label: "Raise Complaint", icon: Megaphone },
+  {
+    label: "Register instrument",
+    href: "/business/instruments/register",
+    icon: PlusSquare,
+  },
+  {
+    label: "Book verification",
+    href: "/business/requests/new",
+    icon: CalendarPlus,
+  },
+  {
+    label: "Re-verify a scale",
+    href: "/business/instruments/LM-UP-PRY-000124/re-verify",
+    icon: RotateCcw,
+  },
+  {
+    label: "Certificate vault",
+    href: "/business/certificates",
+    icon: FileCheck2,
+  },
+  {
+    label: "Pay pending fee",
+    href: "/business/payments",
+    icon: ReceiptIndianRupee,
+  },
+  {
+    label: "Print QR stickers",
+    href: "/business/certificates",
+    icon: QrCode,
+  },
 ];
 
-const QuickActions = () => {
-  return (
-    <section className="rounded-lg border border-slate-200 bg-white">
-      <div className="border-b border-slate-200 px-4 py-3">
-        <h2 className="text-sm font-semibold text-slate-900">Quick Actions</h2>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 xl:grid-cols-5">
-        {actions.map((action) => {
-          const Icon = action.icon;
-          return (
-            <button
-              className="flex flex-col items-center gap-2 rounded-md border border-slate-200 px-2 py-4 text-[11px] font-medium text-slate-700 transition-colors hover:border-gov-accent hover:bg-slate-50"
-              key={action.label}
-              type="button"
-            >
-              <Icon className="size-5 text-gov-accent" aria-hidden />
-              <span className="text-center leading-4">{action.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-};
+const QuickActions = () => (
+  <Panel
+    bodyClassName="grid grid-cols-2 gap-2.5 p-4 sm:grid-cols-3"
+    title="Quick actions"
+  >
+    {actions.map((action) => {
+      const Icon = action.icon;
+      return (
+        <Link
+          className="flex flex-col items-center gap-2 rounded-gov border border-line px-2 py-4 text-center text-[11px] font-medium leading-4 text-ink transition-colors hover:border-navy hover:bg-surface-alt"
+          href={action.href}
+          key={action.label}
+        >
+          <Icon className="size-5 text-navy" aria-hidden />
+          {action.label}
+        </Link>
+      );
+    })}
+  </Panel>
+);
 
 export default QuickActions;

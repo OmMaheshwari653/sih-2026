@@ -1,30 +1,41 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Noto_Sans_Devanagari, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const serifGov = Source_Serif_4({
+  variable: "--font-serif-gov",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const deva = Noto_Sans_Devanagari({
+  variable: "--font-deva",
+  subsets: ["devanagari"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Legal Metrology | Online Verification System",
+  title: {
+    default: "Legal Metrology Online Verification System",
+    template: "%s | Legal Metrology OVS",
+  },
   description:
-    "Legal Metrology Online Verification System — Department of Consumer Affairs, Government of India.",
+    "Unified digital verification, stamping and enforcement platform for weighing and measuring instruments under the Legal Metrology Act, 2009 — Department of Consumer Affairs, Government of India.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
+      className={`${inter.variable} ${serifGov.variable} ${deva.variable} h-full antialiased`}
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
