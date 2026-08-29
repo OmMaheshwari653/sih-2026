@@ -214,28 +214,27 @@ export const InspectionWorkspace = ({
                     Observed reading (g)
                   </th>
                   <th className="px-3 py-2.5 font-semibold">Error (g)</th>
-                  <th className="px-3 py-2.5 font-semibold">MPE (± g)</th>
+                  <th className="px-3 py-2.5 font-semibold">MPE</th>
                   <th className="px-3 py-2.5 font-semibold">Result</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line-soft">
+              <tbody>
                 {rows.map((row, index) => (
-                  <tr key={row.label}>
+                  <tr className="border-b border-line-soft" key={row.label}>
                     <td className="px-3 py-2.5 font-medium text-ink">
                       {row.label}
                     </td>
                     <td className="num px-3 py-2.5 text-ink-muted">
                       {row.applied.toLocaleString("en-IN")}
                     </td>
-                    <td className="px-3 py-2">
-                      <Input
-                        className="num w-28 px-2 py-1.5 text-xs disabled:opacity-60"
+                    <td className="px-3 py-2.5">
+                      <input
+                        className="num w-24 rounded-gov border border-line px-2 py-1.5 text-xs outline-none focus:border-navy-500 disabled:opacity-60"
                         disabled={locked}
-                        inputMode="numeric"
                         onChange={(event) =>
                           setReadings((current) =>
-                            current.map((value, position) =>
-                              position === index ? event.target.value : value,
+                            current.map((value, i) =>
+                              i === index ? event.target.value : value,
                             ),
                           )
                         }
@@ -331,27 +330,49 @@ export const InspectionWorkspace = ({
             sticker number is permanently bound to this instrument record.
           </p>
 
-          <div className="mt-3 flex items-center gap-2 rounded-gov border border-line px-3">
-            <ScanLine className="size-4 shrink-0 text-ink-muted" aria-hidden />
-            <input
-              className="num w-full bg-transparent py-2.5 text-xs outline-none placeholder:text-ink-muted/70 disabled:opacity-60"
-              disabled={locked}
-              onChange={(event) => setSeal(event.target.value)}
-              placeholder="QR-UP-2025-XXXXX"
-              value={seal}
-            />
-          </div>
+          {seal ? (
+            <div className="mt-3 flex items-center gap-3 rounded-gov border border-india-green/30 bg-india-green/8 p-3">
+              <CircleCheckBig
+                className="size-6 shrink-0 text-india-green"
+                aria-hidden
+              />
+              <div className="min-w-0">
+                <p className="text-[12.5px] font-semibold text-ink">
+                  Seal bound
+                </p>
+                <p className="num truncate text-[11px] text-ink-muted">
+                  {seal}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-3 flex aspect-[4/2.2] flex-col items-center justify-center gap-1.5 rounded-gov border border-dashed border-line bg-surface-alt">
+              <QrCode className="size-7 text-ink-muted/50" aria-hidden />
+              <p className="text-[11px] text-ink-muted">
+                Camera preview appears here
+              </p>
+            </div>
+          )}
 
           <Button
             block
             className="mt-2"
             disabled={locked}
-            onClick={() => setSeal("QR-UP-2025-77120")}
+            onClick={() => setSeal(seal ? "" : "QR-UP-2025-77120")}
             size="sm"
-            variant="secondary"
+            variant={seal ? "secondary" : "primary"}
           >
-            <QrCode className="size-3.5" aria-hidden />
-            Scan sticker with camera
+            {seal ? (
+              <>
+                <ScanLine className="size-3.5" aria-hidden />
+                Rescan sticker
+              </>
+            ) : (
+              <>
+                <QrCode className="size-3.5" aria-hidden />
+                Scan sticker with camera
+              </>
+            )}
           </Button>
         </Panel>
 
