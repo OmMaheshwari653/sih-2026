@@ -69,3 +69,34 @@
     transparent 2px 7px
   );
 }
+
+/* Enforcement verdict colours — used on gate terminals and challan screens */
+@theme {
+  --color-danger: #b3261e;
+  --color-danger-700: #8c1d18;
+}
+
+/* Sweeping laser line for the QR viewfinder */
+@keyframes scan-sweep {
+  0% {
+    transform: translateY(0);
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--scan-travel, 100%));
+    opacity: 0.15;
+  }
+}
+
+@utility scan-sweep {
+  animation: scan-sweep 2s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-sweep {
+    animation: none;
+  }
+}
