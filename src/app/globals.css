@@ -74,6 +74,8 @@
 @theme {
   --color-danger: #b3261e;
   --color-danger-700: #8c1d18;
+  /* Legible on the dark gate terminal, where india-green is too dim. */
+  --color-india-green-300: #56d17a;
 }
 
 /* Sweeping laser line for the QR viewfinder */

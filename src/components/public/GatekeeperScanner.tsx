@@ -1,5 +1,6 @@
 "use client";
 
+import jsQR from "jsqr";
 import {
   ArrowLeft,
   Ban,
@@ -8,46 +9,132 @@ import {
   Loader2,
   Navigation,
   RefreshCw,
+  RotateCcw,
   ScanLine,
   ShieldCheck,
+  TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Instrument } from "@/lib/data";
 import { instruments } from "@/lib/data";
+import { resolveInstrument } from "@/lib/qr";
 
-type Result =
-  | { kind: "allow"; instrument: (typeof instruments)[number] }
-  | { kind: "block"; instrument: (typeof instruments)[number] }
-  | null;
+/**
+ * `BarcodeDetector` is not in the TS DOM lib yet. It is hardware-accelerated on
+ * Android handhelds — the actual gate device — so it is preferred over the
+ * jsQR software fallback used everywhere else.
+ */
+type BarcodeDetectorLike = {
+  detect: (source: CanvasImageSource) => Promise<{ rawValue: string }[]>;
+};
+declare global {
+  interface Window {
+    BarcodeDetector?: new (options?: {
+      formats?: string[];
+    }) => BarcodeDetectorLike;
+  }
+}
+
+type Verdict =
+  | { kind: "allow" | "warn" | "block"; code: string; instrument: Instrument }
+  | { kind: "unknown"; code: string; instrument?: undefined };
 
 /** Live rear-camera preview state for the viewfinder. */
 type Camera = "starting" | "live" | "denied" | "unsupported";
 
-const queue = [
-  { time: "07:42", vendor: "Ramesh Sabzi — Stall 12", verdict: "Allowed" },
+type LogEntry = { id: string; time: string; label: string; allowed: boolean };
+
+/** Ignore repeat reads of the same sticker while it is still in frame. */
+const RESCAN_COOLDOWN_MS = 4000;
+/** jsQR on a full frame is expensive; decode a few times a second instead. */
+const DECODE_INTERVAL_MS = 160;
+/** Downscale before decoding — QR finder patterns survive it, the CPU thanks you. */
+const DECODE_WIDTH = 480;
+
+const seededLog: LogEntry[] = [
+  { id: "s1", time: "07:42", label: "Ramesh Sabzi — Stall 12", allowed: true },
   {
+    id: "s2",
     time: "07:39",
-    vendor: "Nandini Vegetables — Stall 44",
-    verdict: "Blocked",
+    label: "Nandini Vegetables — Stall 44",
+    allowed: false,
   },
-  { time: "07:36", vendor: "Iqbal Fruits — Stall 07", verdict: "Allowed" },
-  { time: "07:31", vendor: "Sharma Dry Fruits — Stall 21", verdict: "Allowed" },
+  { id: "s3", time: "07:36", label: "Iqbal Fruits — Stall 07", allowed: true },
 ];
+
+const clockNow = () =>
+  new Date().toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+/**
+ * A gate decision from a scanned payload. An instrument that is merely
+ * expiring is still legally stamped, so it lets the vendor in with a warning;
+ * anything unstamped, lapsed or unknown is turned away.
+ */
+const judge = (code: string): Verdict => {
+  const instrument = resolveInstrument(code);
+  if (!instrument) {
+    return { kind: "unknown", code };
+  }
+  if (instrument.status === "valid") {
+    return { kind: "allow", code, instrument };
+  }
+  if (instrument.status === "expiring") {
+    return { kind: "warn", code, instrument };
+  }
+  return { kind: "block", code, instrument };
+};
 
 /**
  * Built for a guard holding a rugged handheld in daylight: dark plate, huge
- * type, one decision per screen. The viewfinder shows the real rear camera so
- * the act of scanning is physical — the guard aims the device at the sticker.
+ * type, one decision per screen. The rear camera runs a real QR decode loop —
+ * aiming the device at a sticker is what produces the verdict.
  */
 export const GatekeeperScanner = () => {
-  const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState<Result>(null);
+  const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [camera, setCamera] = useState<Camera>("starting");
+  const [log, setLog] = useState<LogEntry[]>(seededLog);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const timerRef = useRef<number | undefined>(undefined);
+  const frameRef = useRef<number | undefined>(undefined);
+  const detectorRef = useRef<BarcodeDetectorLike | null>(null);
+  const lastDecodeRef = useRef(0);
+  const lastCodeRef = useRef<{ code: string; at: number } | null>(null);
+
+  const record = useCallback((next: Verdict) => {
+    const now = Date.now();
+    const previous = lastCodeRef.current;
+    if (
+      previous &&
+      previous.code === next.code &&
+      now - previous.at < RESCAN_COOLDOWN_MS
+    ) {
+      return;
+    }
+    lastCodeRef.current = { code: next.code, at: now };
+
+    setVerdict(next);
+    setLog((entries) =>
+      [
+        {
+          id: `${next.code}-${now}`,
+          time: clockNow(),
+          label: next.instrument
+            ? `${next.instrument.name} — ${next.instrument.id}`
+            : `Unrecognised sticker — ${next.code || "unreadable"}`,
+          allowed: next.kind === "allow" || next.kind === "warn",
+        },
+        ...entries,
+      ].slice(0, 8),
+    );
+  }, []);
 
   const stopCamera = useCallback(() => {
     for (const track of streamRef.current?.getTracks() ?? []) {
@@ -68,7 +155,11 @@ export const GatekeeperScanner = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         // Rear camera on a handheld; falls back to whatever a laptop offers.
-        video: { facingMode: { ideal: "environment" } },
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 960 },
+        },
         audio: false,
       });
       streamRef.current = stream;
@@ -84,27 +175,107 @@ export const GatekeeperScanner = () => {
 
   useEffect(() => {
     startCamera();
-    return () => {
-      stopCamera();
-      window.clearTimeout(timerRef.current);
-    };
+    return stopCamera;
   }, [startCamera, stopCamera]);
 
-  const scan = (index: number) => {
-    window.clearTimeout(timerRef.current);
-    setResult(null);
-    setScanning(true);
-    timerRef.current = window.setTimeout(() => {
-      const instrument = instruments[index];
-      setScanning(false);
-      setResult({
-        kind: instrument.status === "valid" ? "allow" : "block",
-        instrument,
+  // Decode loop — runs only while the preview is actually live.
+  useEffect(() => {
+    if (camera !== "live") {
+      return;
+    }
+
+    if (!detectorRef.current && typeof window.BarcodeDetector === "function") {
+      try {
+        detectorRef.current = new window.BarcodeDetector({
+          formats: ["qr_code"],
+        });
+      } catch {
+        // Formats unsupported on this build — jsQR handles it.
+        detectorRef.current = null;
+      }
+    }
+
+    let cancelled = false;
+
+    const readFrame = async () => {
+      const video = videoRef.current;
+      if (!video || video.readyState < video.HAVE_CURRENT_DATA) {
+        return;
+      }
+
+      const scale = Math.min(1, DECODE_WIDTH / video.videoWidth);
+      const width = Math.round(video.videoWidth * scale);
+      const height = Math.round(video.videoHeight * scale);
+      if (!width || !height) {
+        return;
+      }
+
+      canvasRef.current ??= document.createElement("canvas");
+      const canvas = canvasRef.current;
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) {
+        return;
+      }
+      context.drawImage(video, 0, 0, width, height);
+
+      if (detectorRef.current) {
+        const [hit] = await detectorRef.current.detect(canvas);
+        if (hit?.rawValue) {
+          record(judge(hit.rawValue));
+        }
+        return;
+      }
+
+      const frame = context.getImageData(0, 0, width, height);
+      const hit = jsQR(frame.data, width, height, {
+        inversionAttempts: "dontInvert",
       });
-    }, 1100);
+      if (hit?.data) {
+        record(judge(hit.data));
+      }
+    };
+
+    const tick: FrameRequestCallback = async (timestamp) => {
+      if (cancelled) {
+        return;
+      }
+      if (timestamp - lastDecodeRef.current >= DECODE_INTERVAL_MS) {
+        lastDecodeRef.current = timestamp;
+        try {
+          await readFrame();
+        } catch {
+          // A dropped frame is not worth tearing the loop down for.
+        }
+      }
+      if (!cancelled) {
+        frameRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    frameRef.current = requestAnimationFrame(tick);
+    return () => {
+      cancelled = true;
+      if (frameRef.current !== undefined) {
+        cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, [camera, record]);
+
+  /** Bench testing when no printed sticker is at hand. */
+  const simulate = (index: number) => {
+    lastCodeRef.current = null;
+    record(judge(instruments[index].id));
   };
 
-  const allowed = result?.kind === "allow";
+  const clear = () => {
+    lastCodeRef.current = null;
+    setVerdict(null);
+  };
+
+  const admitted = verdict?.kind === "allow" || verdict?.kind === "warn";
+  const aiming = camera === "live" && !verdict;
 
   return (
     <div className="flex min-h-screen flex-col bg-navy-900 text-white">
@@ -188,7 +359,7 @@ export const GatekeeperScanner = () => {
                   key={corner}
                 />
               ))}
-              {scanning ? (
+              {aiming ? (
                 <span
                   aria-hidden
                   className="scan-sweep absolute inset-x-0 top-0 h-0.5 bg-saffron shadow-[0_0_18px_2px_rgba(255,153,51,0.75)]"
@@ -199,37 +370,54 @@ export const GatekeeperScanner = () => {
               ) : null}
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/55 py-3 text-xs text-white/75">
-              {scanning ? (
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-black/55 py-3 text-center text-xs text-white/75">
+              {aiming ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                  Reading QR seal…
+                  <ScanLine className="size-4 shrink-0" aria-hidden />
+                  Hold the vendor&apos;s scale sticker inside the frame
+                </>
+              ) : verdict ? (
+                <>
+                  <ScanLine className="size-4 shrink-0" aria-hidden />
+                  <span className="num truncate">
+                    Read: {verdict.code || "unreadable"}
+                  </span>
                 </>
               ) : (
                 <>
-                  <ScanLine className="size-4" aria-hidden />
-                  Hold the vendor&apos;s scale sticker inside the frame
+                  <Loader2
+                    className="size-4 shrink-0 animate-spin"
+                    aria-hidden
+                  />
+                  Preparing scanner…
                 </>
               )}
             </div>
           </div>
 
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
             <button
-              className="rounded-gov border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold hover:bg-white/14 disabled:opacity-50"
-              disabled={scanning}
-              onClick={() => scan(0)}
+              className="rounded-gov border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold hover:bg-white/14"
+              onClick={() => simulate(0)}
               type="button"
             >
-              Simulate scan — valid sticker
+              Test — valid
             </button>
             <button
-              className="rounded-gov border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold hover:bg-white/14 disabled:opacity-50"
-              disabled={scanning}
-              onClick={() => scan(3)}
+              className="rounded-gov border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold hover:bg-white/14"
+              onClick={() => simulate(3)}
               type="button"
             >
-              Simulate scan — expired sticker
+              Test — expired
+            </button>
+            <button
+              className="inline-flex items-center justify-center gap-2 rounded-gov border border-white/15 bg-white/8 px-4 py-3 text-sm font-semibold hover:bg-white/14 disabled:opacity-40"
+              disabled={!verdict}
+              onClick={clear}
+              type="button"
+            >
+              <RotateCcw className="size-4" aria-hidden />
+              Next vendor
             </button>
           </div>
         </div>
@@ -237,48 +425,80 @@ export const GatekeeperScanner = () => {
         <div className="row-start-1 flex flex-col gap-4">
           {/* Verdict — reserves its height so the panel never jumps on scan. */}
           <div className="flex min-h-72 flex-col">
-            {result ? (
+            {verdict ? (
               <div
                 className={`flex-1 rounded-lg border p-5 ${
-                  allowed
+                  verdict.kind === "allow"
                     ? "border-india-green/50 bg-india-green"
-                    : "border-danger/50 bg-danger"
+                    : verdict.kind === "warn"
+                      ? "border-saffron/50 bg-saffron text-navy-900"
+                      : "border-danger/50 bg-danger"
                 }`}
               >
-                {allowed ? (
+                {verdict.kind === "allow" ? (
                   <CircleCheckBig className="size-10" aria-hidden />
+                ) : verdict.kind === "warn" ? (
+                  <TriangleAlert className="size-10" aria-hidden />
                 ) : (
                   <Ban className="size-10" aria-hidden />
                 )}
                 <h1 className="mt-3 font-serif text-3xl font-bold leading-tight">
-                  {allowed ? "Entry Allowed" : "Entry Blocked"}
+                  {verdict.kind === "allow"
+                    ? "Entry Allowed"
+                    : verdict.kind === "warn"
+                      ? "Allowed — expiring"
+                      : "Entry Blocked"}
                 </h1>
-                <p className="mt-1.5 text-sm text-white/85">
-                  {allowed
-                    ? `Scale valid until ${result.instrument.validTill}.`
-                    : "Stamping has expired. Vendor must get re-verified before trading."}
+                <p
+                  className={`mt-1.5 text-sm ${
+                    verdict.kind === "warn"
+                      ? "text-navy-900/80"
+                      : "text-white/85"
+                  }`}
+                >
+                  {verdict.kind === "allow"
+                    ? `Scale valid until ${verdict.instrument.validTill}.`
+                    : verdict.kind === "warn"
+                      ? `Stamping lapses on ${verdict.instrument.validTill}. Tell the vendor to book re-verification.`
+                      : verdict.kind === "unknown"
+                        ? "No stamping record exists for this sticker. Treat it as counterfeit."
+                        : "Stamping is not valid. Vendor must get re-verified before trading."}
                 </p>
 
-                <dl className="num mt-4 space-y-1.5 border-t border-white/25 pt-3 text-xs text-white/85">
-                  <div className="flex justify-between gap-3">
-                    <dt>Instrument</dt>
-                    <dd className="font-semibold">{result.instrument.id}</dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt>Type</dt>
-                    <dd className="font-semibold">{result.instrument.name}</dd>
-                  </div>
-                  <div className="flex justify-between gap-3">
-                    <dt>Last stamped</dt>
-                    <dd className="font-semibold">
-                      {result.instrument.stampedOn}
-                    </dd>
-                  </div>
-                </dl>
+                {verdict.instrument ? (
+                  <dl
+                    className={`num mt-4 space-y-1.5 border-t pt-3 text-xs ${
+                      verdict.kind === "warn"
+                        ? "border-navy-900/25 text-navy-900/85"
+                        : "border-white/25 text-white/85"
+                    }`}
+                  >
+                    <div className="flex justify-between gap-3">
+                      <dt>Instrument</dt>
+                      <dd className="font-semibold">{verdict.instrument.id}</dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt>Type</dt>
+                      <dd className="font-semibold">
+                        {verdict.instrument.name}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt>Last stamped</dt>
+                      <dd className="font-semibold">
+                        {verdict.instrument.stampedOn}
+                      </dd>
+                    </div>
+                  </dl>
+                ) : (
+                  <p className="num mt-4 break-all border-t border-white/25 pt-3 text-xs text-white/85">
+                    Payload: {verdict.code || "could not be read"}
+                  </p>
+                )}
 
-                {allowed ? null : (
+                {admitted ? null : (
                   <p className="mt-4 flex items-center gap-2 rounded-gov bg-black/25 px-3 py-2.5 text-sm font-semibold">
-                    <Navigation className="size-4" aria-hidden />
+                    <Navigation className="size-4 shrink-0" aria-hidden />
                     Redirect vendor to the camp van at Gate #3
                   </p>
                 )}
@@ -300,13 +520,13 @@ export const GatekeeperScanner = () => {
             </p>
             <div className="num mt-3 flex gap-6">
               <p className="text-2xl font-bold">
-                214
+                {211 + log.filter((entry) => entry.allowed).length}
                 <span className="ml-1.5 text-[11px] font-normal text-white/50">
                   allowed
                 </span>
               </p>
               <p className="text-2xl font-bold text-saffron">
-                17
+                {16 + log.filter((entry) => !entry.allowed).length}
                 <span className="ml-1.5 text-[11px] font-normal text-white/50">
                   blocked
                 </span>
@@ -314,23 +534,25 @@ export const GatekeeperScanner = () => {
             </div>
 
             <ul className="mt-3 divide-y divide-white/8 text-xs">
-              {queue.map((entry) => (
+              {log.map((entry) => (
                 <li
                   className="flex items-center justify-between gap-3 py-2"
-                  key={entry.vendor}
+                  key={entry.id}
                 >
-                  <span className="num text-white/45">{entry.time}</span>
+                  <span className="num shrink-0 text-white/45">
+                    {entry.time}
+                  </span>
                   <span className="flex-1 truncate text-white/80">
-                    {entry.vendor}
+                    {entry.label}
                   </span>
                   <span
                     className={
-                      entry.verdict === "Allowed"
-                        ? "font-semibold text-india-green"
-                        : "font-semibold text-saffron"
+                      entry.allowed
+                        ? "shrink-0 font-semibold text-india-green-300"
+                        : "shrink-0 font-semibold text-saffron"
                     }
                   >
-                    {entry.verdict}
+                    {entry.allowed ? "Allowed" : "Blocked"}
                   </span>
                 </li>
               ))}
