@@ -189,7 +189,7 @@ export const PortalShell = ({
         }
       />
 
-      <div className="mx-auto flex w-full max-w-360 flex-1">
+      <div className="flex w-full flex-1">
         <aside className="hidden w-60 shrink-0 flex-col justify-between bg-navy text-white lg:flex">
           <div>
             <div className="border-b border-white/10 px-4 py-3.5">
