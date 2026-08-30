@@ -116,7 +116,7 @@ export const InspectionWorkspace = ({
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
-      <div className="space-y-4">
+  <div className="min-w-0 space-y-4">
         {/* ------------------------------------------------ Geo-fence gate */}
         <section
           className={`rounded-gov border p-4 ${
