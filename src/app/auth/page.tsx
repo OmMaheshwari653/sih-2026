@@ -26,7 +26,7 @@ const options = [
     icon: ShieldCheck,
     title: "Controller / Administration",
     body: "State and central command analytics, e-challans and enforcement triage.",
-    href: "/admin/dashboard",
+    href: "/auth/admin/login",
   },
 ];
 

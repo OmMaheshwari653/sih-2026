@@ -1,5 +1,5 @@
 import { CheckCircle2, Store } from "lucide-react";
-import { LoginPanel } from "@/components/auth/LoginPanel";
+import { BusinessLoginForm } from "@/components/auth/BusinessLoginForm";
 
 export const metadata = { title: "Trader Login" };
 
@@ -51,30 +51,7 @@ const BusinessLoginPage = () => (
     </section>
 
     <section className="order-1 lg:order-2">
-      <LoginPanel
-        demoIdentifier="09AABCA1234F1Z5"
-        destination="/business/dashboard"
-        modes={[
-          {
-            id: "gstin",
-            label: "GSTIN",
-            placeholder: "15-character GSTIN",
-            hint: "Used to pull your registered trade name and address.",
-          },
-          {
-            id: "licence",
-            label: "Trade Licence",
-            placeholder: "Municipal licence number",
-            hint: "For establishments outside the GST net.",
-          },
-          {
-            id: "mobile",
-            label: "Mobile",
-            placeholder: "10-digit registered mobile",
-            hint: "Only the number recorded against your establishment.",
-          },
-        ]}
-      />
+      <BusinessLoginForm />
     </section>
   </div>
 );
