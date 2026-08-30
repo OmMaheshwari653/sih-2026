@@ -11,9 +11,15 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type ReactNode, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useState } from "react";
 import { GovStrip, Masthead } from "@/components/shared/Masthead";
+import {
+  clearSessionUser,
+  loginHrefForRole,
+  readSessionUser,
+  type StoredUser,
+} from "@/lib/auth";
 
 export type NavItem = {
   label: string;
@@ -93,7 +99,22 @@ export const PortalShell = ({
   children: ReactNode;
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [sessionUser, setSessionUser] = useState<StoredUser | null>(null);
+
+  useEffect(() => {
+    setSessionUser(readSessionUser());
+  }, []);
+
+  const displayName = sessionUser?.name ?? user.name;
+
+  const logout = () => {
+    clearSessionUser();
+    setMenuOpen(false);
+    router.push(sessionUser ? loginHrefForRole(sessionUser.role) : "/auth");
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -114,23 +135,56 @@ export const PortalShell = ({
                 5
               </span>
             </button>
-            <button className="flex items-center gap-2" type="button">
-              <span className="flex size-9 items-center justify-center rounded-full bg-navy text-white">
-                <UserRound className="size-4.5" aria-hidden />
-              </span>
-              <span className="hidden text-left leading-4 sm:block">
-                <span className="block text-[10px] uppercase tracking-wide text-ink-muted">
-                  {user.role}
+            <div className="relative">
+              <button
+                aria-expanded={menuOpen}
+                aria-haspopup="menu"
+                className="flex items-center gap-2"
+                onClick={() => setMenuOpen((value) => !value)}
+                type="button"
+              >
+                <span className="flex size-9 items-center justify-center rounded-full bg-navy text-white">
+                  <UserRound className="size-4.5" aria-hidden />
                 </span>
-                <span className="block text-xs font-semibold text-ink">
-                  {user.name}
+                <span className="hidden text-left leading-4 sm:block">
+                  <span className="block text-[10px] uppercase tracking-wide text-ink-muted">
+                    {user.role}
+                  </span>
+                  <span className="block text-xs font-semibold text-ink">
+                    {displayName}
+                  </span>
                 </span>
-              </span>
-              <ChevronDown
-                className="hidden size-4 text-ink-muted sm:block"
-                aria-hidden
-              />
-            </button>
+                <ChevronDown
+                  className="hidden size-4 text-ink-muted sm:block"
+                  aria-hidden
+                />
+              </button>
+
+              {menuOpen ? (
+                <>
+                  <button
+                    aria-label="Close user menu"
+                    className="fixed inset-0 z-40 cursor-default"
+                    onClick={() => setMenuOpen(false)}
+                    type="button"
+                  />
+                  <div
+                    className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-gov border border-line bg-surface shadow-lg"
+                    role="menu"
+                  >
+                    <button
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-semibold text-red-600 transition-colors hover:bg-red-50"
+                      onClick={logout}
+                      role="menuitem"
+                      type="button"
+                    >
+                      <LogOut className="size-3.5" aria-hidden />
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
         }
       />
