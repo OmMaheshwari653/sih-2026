@@ -101,6 +101,8 @@ export const PortalShell = ({
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  // --- session user / logout menu ---
   const [menuOpen, setMenuOpen] = useState(false);
   const [sessionUser, setSessionUser] = useState<StoredUser | null>(null);
 
@@ -116,6 +118,38 @@ export const PortalShell = ({
     router.push(sessionUser ? loginHrefForRole(sessionUser.role) : "/auth");
   };
 
+  // --- notifications dropdown ---
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Verification rejected",
+      message: "Scale SC-1024 requires action.",
+      time: "2 hours ago",
+      unread: true,
+      type: "critical",
+      href: "/business/instruments",
+    },
+    {
+      id: 2,
+      title: "Scales expiring soon",
+      message: "3 instruments need renewal within 30 days.",
+      time: "5 hours ago",
+      unread: true,
+      type: "warning",
+      href: "/business/instruments",
+    },
+    {
+      id: 3,
+      title: "Verification completed",
+      message: "Scale SC-1008 was successfully verified.",
+      time: "Yesterday",
+      unread: true,
+      type: "success",
+      href: "/business/instruments",
+    },
+  ]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <GovStrip />
@@ -125,16 +159,138 @@ export const PortalShell = ({
             <span className="hidden rounded-gov border border-line bg-surface-alt px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-navy md:inline">
               {portalName}
             </span>
-            <button
-              aria-label="Notifications"
-              className="relative text-navy"
-              type="button"
-            >
-              <Bell className="size-5" aria-hidden />
-              <span className="num absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-                5
-              </span>
-            </button>
+
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                aria-label="Notifications"
+                aria-expanded={notificationsOpen}
+                className="relative rounded-gov p-1 text-navy hover:bg-surface-alt"
+                onClick={() => setNotificationsOpen((prev) => !prev)}
+                type="button"
+              >
+                <Bell className="size-5" aria-hidden />
+
+                {notifications.filter((notification) => notification.unread)
+                  .length > 0 && (
+                  <span className="num absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                    {
+                      notifications.filter(
+                        (notification) => notification.unread,
+                      ).length
+                    }
+                  </span>
+                )}
+              </button>
+
+              {notificationsOpen && (
+                <div className="absolute right-0 top-10 z-50 w-80 overflow-hidden rounded-gov border border-line bg-white shadow-xl">
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-ink">
+                        Notifications
+                      </p>
+
+                      <p className="text-[11px] text-ink-muted">
+                        Recent alerts and updates
+                      </p>
+                    </div>
+
+                    {notifications.some(
+                      (notification) => notification.unread,
+                    ) && (
+                      <button
+                        className="text-[11px] font-semibold text-navy hover:underline"
+                        onClick={() =>
+                          setNotifications((current) =>
+                            current.map((notification) => ({
+                              ...notification,
+                              unread: false,
+                            })),
+                          )
+                        }
+                        type="button"
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Notifications */}
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center text-sm text-ink-muted">
+                        No notifications
+                      </div>
+                    ) : (
+                      notifications.map((notification) => (
+                        <Link
+                          key={notification.id}
+                          href={notification.href}
+                          onClick={() => {
+                            setNotifications((current) =>
+                              current.map((item) =>
+                                item.id === notification.id
+                                  ? { ...item, unread: false }
+                                  : item,
+                              ),
+                            );
+
+                            setNotificationsOpen(false);
+                          }}
+                          className={`block border-b border-line px-4 py-3 transition-colors hover:bg-surface-alt ${
+                            notification.unread ? "bg-surface-alt/60" : "bg-white"
+                          }`}
+                        >
+                          <div className="flex gap-3">
+                            {/* Severity indicator */}
+                            <span
+                              className={`mt-1.5 size-2 shrink-0 rounded-full ${
+                                notification.type === "critical"
+                                  ? "bg-red-500"
+                                  : notification.type === "warning"
+                                    ? "bg-amber-500"
+                                    : "bg-green-500"
+                              }`}
+                            />
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between gap-2">
+                                <p
+                                  className={`text-xs ${
+                                    notification.unread
+                                      ? "font-semibold text-ink"
+                                      : "font-medium text-ink-muted"
+                                  }`}
+                                >
+                                  {notification.title}
+                                </p>
+
+                                {/* Unread indicator */}
+                                {notification.unread && (
+                                  <span className="mt-1 size-1.5 shrink-0 rounded-full bg-navy" />
+                                )}
+                              </div>
+
+                              <p className="mt-0.5 text-[11px] leading-4 text-ink-muted">
+                                {notification.message}
+                              </p>
+
+                              <p className="mt-1 text-[10px] text-ink-muted">
+                                {notification.time}
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Session user / logout menu */}
             <div className="relative">
               <button
                 aria-expanded={menuOpen}
