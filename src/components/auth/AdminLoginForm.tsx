@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
+import { storeSessionUser } from "@/lib/auth";
 
 export const AdminLoginForm = () => {
   const router = useRouter();
@@ -13,7 +14,10 @@ export const AdminLoginForm = () => {
 
   const submit = () => {
     setBusy(true);
-    window.setTimeout(() => router.push("/admin/dashboard"), 700);
+    window.setTimeout(() => {
+      storeSessionUser({ name: "Controller User", role: "admin" });
+      router.push("/admin/dashboard");
+    }, 700);
   };
 
   return (

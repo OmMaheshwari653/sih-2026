@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input, Select } from "@/components/ui/Field";
+import { storeSessionUser } from "@/lib/auth";
 
 const districts = [
   "Prayagraj — Sadar Circle",
@@ -20,7 +21,10 @@ export const LmoLoginForm = () => {
 
   const submit = () => {
     setBusy(true);
-    window.setTimeout(() => router.push("/lmo/dashboard"), 700);
+    window.setTimeout(() => {
+      storeSessionUser({ name: "LMO Officer", role: "lmo" });
+      router.push("/lmo/dashboard");
+    }, 700);
   };
 
   return (

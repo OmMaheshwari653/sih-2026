@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
+import { storeSessionUser } from "@/lib/auth";
 
 type Method = "otp" | "gstin" | "mobile";
 
@@ -23,7 +24,10 @@ export const BusinessLoginForm = () => {
 
   const submit = () => {
     setBusy(true);
-    window.setTimeout(() => router.push("/business/dashboard"), 700);
+    window.setTimeout(() => {
+      storeSessionUser({ name: "Trader User", role: "business" });
+      router.push("/business/dashboard");
+    }, 700);
   };
 
   const sendOtp = () => {
