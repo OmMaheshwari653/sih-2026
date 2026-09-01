@@ -25,13 +25,13 @@ export const PublicHeader = () => {
       <Masthead
         right={
           <div className="flex items-center gap-2">
-            <Link
-              className="hidden items-center gap-2 rounded-gov border border-line px-3 py-2 text-xs font-semibold text-navy hover:bg-surface-alt sm:inline-flex"
-              href="/verify/LM-UP-PRY-000123"
-            >
-              <ScanLine className="size-4" aria-hidden />
-              Scan QR
-            </Link>
+           <Link
+  className="hidden items-center gap-2 rounded-gov border border-line px-3 py-2 text-xs font-semibold text-navy hover:bg-surface-alt sm:inline-flex"
+  href="/scan"
+>
+  <ScanLine className="size-4" aria-hidden />
+  Scan QR
+</Link>
             <Link
               className="rounded-gov bg-navy px-3.5 py-2 text-xs font-semibold text-white hover:bg-navy-700"
               href="/auth"
