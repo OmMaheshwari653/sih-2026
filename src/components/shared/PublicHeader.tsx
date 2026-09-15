@@ -8,11 +8,10 @@ import { GovStrip, Masthead } from "@/components/shared/Masthead";
 
 const links = [
   { label: "Home", href: "/" },
-  { label: "Verify a Scale", href: "/verify/LM-UP-PRY-000123" },
+  { label: "Scan & Verify", href: "/verify" },
   { label: "Report Fraud", href: "/report-fraud" },
-  { label: "Verification Camps", href: "/camps" },
-  { label: "Mandi Gatekeeper", href: "/gatekeeper/scan" },
-  { label: "Know Your Rights", href: "/#rights" },
+  { label: "Camps", href: "/camps" },
+  { label: "Your Rights", href: "/#rights" },
 ];
 
 export const PublicHeader = () => {
@@ -24,46 +23,45 @@ export const PublicHeader = () => {
       <GovStrip />
       <Masthead
         right={
-          <div className="flex items-center gap-2">
-           <Link
-  className="hidden items-center gap-2 rounded-gov border border-line px-3 py-2 text-xs font-semibold text-navy hover:bg-surface-alt sm:inline-flex"
-  href="/scan"
->
-  <ScanLine className="size-4" aria-hidden />
-  Scan QR
-</Link>
+          <div className="flex items-center gap-1.5">
             <Link
-              className="rounded-gov bg-navy px-3.5 py-2 text-xs font-semibold text-white hover:bg-navy-700"
+              className="hidden items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold text-ink transition-colors hover:bg-white/70 sm:inline-flex"
+              href="/verify"
+            >
+              <ScanLine className="size-4" aria-hidden />
+              Scan QR
+            </Link>
+            <Link
+              className="btn-ink rounded-full px-4 py-2 text-xs font-semibold transition-all hover:brightness-125"
               href="/auth"
             >
-              Login / Register
+              Sign in
             </Link>
             <button
+              aria-expanded={open}
               aria-label="Open menu"
-              className="rounded-gov border border-line p-2 text-navy lg:hidden"
+              className="rounded-full p-2 text-ink hover:bg-white/70 lg:hidden"
               onClick={() => setOpen((value) => !value)}
               type="button"
             >
               {open ? (
-                <X className="size-4" aria-hidden />
+                <X className="size-4.5" aria-hidden />
               ) : (
-                <Menu className="size-4" aria-hidden />
+                <Menu className="size-4.5" aria-hidden />
               )}
             </button>
           </div>
         }
-      />
-
-      <div className="sticky top-0 z-30 border-b border-navy-900/40 bg-navy text-white">
-        <nav className="mx-auto hidden w-full max-w-360 items-center gap-0.5 px-4 sm:px-6 lg:flex">
+      >
+        <nav className="hidden items-center gap-0.5 rounded-full border border-white/70 bg-white/45 p-1 lg:flex">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
-                className={`border-b-2 px-3.5 py-3 text-[13px] transition-colors ${
+                className={`rounded-full px-3.5 py-1.5 text-[13px] transition-all duration-200 ${
                   active
-                    ? "border-saffron font-semibold text-white"
-                    : "border-transparent text-white/80 hover:bg-white/8 hover:text-white"
+                    ? "bg-white font-semibold text-ink shadow-[0_1px_2px_rgb(15_23_42/0.06),0_4px_12px_-4px_rgb(30_41_90/0.2)]"
+                    : "text-ink-muted hover:text-ink"
                 }`}
                 href={link.href}
                 key={link.label}
@@ -75,10 +73,14 @@ export const PublicHeader = () => {
         </nav>
 
         {open ? (
-          <nav className="flex flex-col lg:hidden">
+          <nav className="order-last flex w-full flex-col gap-0.5 border-t border-line-soft pt-2 lg:hidden">
             {links.map((link) => (
               <Link
-                className="border-b border-white/10 px-4 py-3 text-sm text-white/85"
+                className={`rounded-xl px-3 py-2.5 text-sm ${
+                  pathname === link.href
+                    ? "bg-white font-semibold text-ink"
+                    : "text-ink-muted"
+                }`}
                 href={link.href}
                 key={link.label}
                 onClick={() => setOpen(false)}
@@ -87,12 +89,8 @@ export const PublicHeader = () => {
               </Link>
             ))}
           </nav>
-        ) : (
-          <p className="px-4 py-2.5 text-[11px] text-white/70 lg:hidden">
-            Scan any scale&apos;s QR sticker to check if it is legally stamped.
-          </p>
-        )}
-      </div>
+        ) : null}
+      </Masthead>
     </>
   );
 };

@@ -42,7 +42,7 @@ const steps = [
 
 const dot = {
   done: "bg-india-green text-white",
-  current: "bg-navy text-white ring-4 ring-navy/15",
+  current: "btn-ink ring-4 ring-navy/15",
   upcoming: "border border-line bg-surface text-ink-muted",
 };
 

@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 
 const control =
-  "w-full rounded-gov border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-ink-muted/70 focus:border-navy-500 disabled:bg-surface-alt disabled:text-ink-muted";
+  "w-full rounded-xl border border-white/80 bg-white/65 px-3.5 py-2.5 text-sm text-ink shadow-[inset_0_1px_2px_rgb(15_23_42/0.06)] outline-none backdrop-blur-md transition-all duration-200 placeholder:text-ink-muted/60 hover:bg-white/80 focus:border-navy-500/50 focus:bg-white focus:ring-4 focus:ring-navy-500/12 disabled:bg-white/30 disabled:text-ink-muted";
 
 export const Field = ({
   label,
@@ -57,10 +57,10 @@ export const Chip = ({
   ...rest
 }: { active?: boolean } & ComponentProps<"button">) => (
   <button
-    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+    className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-200 ${
       active
-        ? "border-navy bg-navy text-white"
-        : "border-line bg-surface text-ink-muted hover:border-navy/40 hover:text-ink"
+        ? "btn-ink border-transparent"
+        : "border-white/80 bg-white/55 text-ink-muted backdrop-blur-md hover:bg-white/85 hover:text-ink"
     }`}
     type="button"
     {...rest}

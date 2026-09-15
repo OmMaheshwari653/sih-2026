@@ -2,25 +2,20 @@
 
 import { Download, FileCheck2, Printer, Scale, Stamp } from "lucide-react";
 import { useState } from "react";
+import { QrGlyph } from "@/components/brand/QrGlyph";
 import { Button } from "@/components/ui/Button";
 import { Panel } from "@/components/ui/Panel";
 import { certificates, instrumentById } from "@/lib/data";
 
-const QrBlock = ({ size = "size-24" }: { size?: string }) => (
-  <div className={`grid ${size} grid-cols-7 gap-px rounded-[2px] bg-white p-1`}>
-    {Array.from({ length: 49 }, (_, index) => index).map((cell) => (
-      <span
-        className={
-          [
-            0, 1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 18, 20, 21, 23, 25, 27, 28, 30,
-            32, 34, 35, 37, 39, 41, 42, 44, 46, 48, 5, 12, 19, 26, 33,
-          ].includes(cell)
-            ? "bg-navy-900"
-            : "bg-transparent"
-        }
-        key={cell}
-      />
-    ))}
+const QrBlock = ({
+  size = "size-24",
+  value,
+}: {
+  size?: string;
+  value: string;
+}) => (
+  <div className={`${size} rounded-md bg-white p-1 text-navy-900`}>
+    <QrGlyph className="size-full" value={value} />
   </div>
 );
 
@@ -139,7 +134,7 @@ export const CertificateVault = () => {
               <div className="flex flex-row items-start gap-5 sm:flex-col sm:items-center">
                 <div className="text-center">
                   <div className="rounded-[2px] border border-navy/20 p-1">
-                    <QrBlock />
+                    <QrBlock value={active.id} />
                   </div>
                   <p className="mt-1 text-[9px] uppercase tracking-wide text-ink-muted">
                     Scan to verify
@@ -194,7 +189,7 @@ export const CertificateVault = () => {
               </div>
               <div className="flex items-center gap-3 bg-white p-3">
                 <div className="border border-line p-0.5">
-                  <QrBlock size="size-16" />
+                  <QrBlock size="size-16" value={active.id} />
                 </div>
                 <div className="min-w-0">
                   <p className="num text-[10px] font-bold text-ink">

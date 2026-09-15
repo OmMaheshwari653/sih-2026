@@ -40,7 +40,7 @@ const BusinessLoginPage = () => (
         ))}
       </ul>
 
-      <div className="mt-6 rounded-gov border border-line bg-surface-alt p-4 text-[13px] text-ink-muted">
+      <div className="mt-6 rounded-2xl border border-white/70 bg-white/45 p-4 text-[13px] text-ink-muted">
         <p className="font-semibold text-ink">Penalty for non-compliance</p>
         <p className="mt-1 leading-5">
           Trading with an unverified instrument attracts a compounding fee from

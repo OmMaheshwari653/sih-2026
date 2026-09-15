@@ -39,14 +39,12 @@ export const BusinessLoginForm = () => {
   };
 
   return (
-    <div className="rounded-gov border border-line bg-surface p-5 sm:p-6">
-      <div className="mb-4 flex flex-wrap gap-1 rounded-gov border border-line bg-surface-alt p-1">
+    <div className="glass rounded-3xl p-5 sm:p-6">
+      <div className="mb-4 flex flex-wrap gap-1 rounded-2xl border border-white/70 bg-white/45 p-1">
         {(["otp", "gstin", "mobile"] as Method[]).map((item) => (
           <button
-            className={`flex-1 rounded-[3px] px-3 py-2 text-xs font-semibold transition-colors ${
-              method === item
-                ? "bg-navy text-white"
-                : "text-ink-muted hover:text-ink"
+            className={`flex-1 rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
+              method === item ? "btn-ink" : "text-ink-muted hover:text-ink"
             }`}
             key={item}
             onClick={() => {

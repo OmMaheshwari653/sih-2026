@@ -108,7 +108,7 @@ export const CampLocator = () => {
                   <span
                     className={`flex items-center gap-1 whitespace-nowrap rounded-gov border px-2 py-1 text-[10px] font-semibold shadow-sm ${
                       isActive
-                        ? "border-navy bg-navy text-white"
+                        ? "border-navy btn-ink"
                         : "border-line bg-white text-ink"
                     }`}
                   >

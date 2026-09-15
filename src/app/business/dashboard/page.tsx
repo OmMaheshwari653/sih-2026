@@ -41,7 +41,7 @@ const BusinessDashboardPage = () => (
       title="Compliance Command Centre"
     />
 
-    <div className="flex flex-col gap-4 xl:grid xl:grid-cols-[minmax(0,1fr)_20rem]">
+    <div className="flex flex-col gap-4 xl:grid xl:grid-cols-[minmax(0,1fr)_20rem] xl:grid-rows-[auto_1fr]">
       {/* Verify box leads on phones — it is the most-used action at a counter */}
       <div className="order-1 xl:order-none xl:col-start-2 xl:row-start-1">
         <VerifyCertificate />
@@ -49,7 +49,7 @@ const BusinessDashboardPage = () => (
 
       <div className="order-2 min-w-0 space-y-4 xl:order-none xl:col-start-1 xl:row-span-2 xl:row-start-1">
         {/* Non-compliance banner */}
-        <div className="flex flex-wrap items-start gap-3 rounded-gov border-l-4 border-l-red-600 border-y border-r border-line bg-red-50/60 p-4">
+        <div className="flex flex-wrap items-start gap-3 rounded-3xl border border-red-500/20 bg-linear-to-br from-red-500/12 to-red-500/4 p-5 backdrop-blur-xl">
           <TriangleAlert
             className="mt-0.5 size-5 shrink-0 text-red-700"
             aria-hidden
@@ -66,7 +66,7 @@ const BusinessDashboardPage = () => (
             </p>
           </div>
           <Link
-            className="rounded-gov bg-red-700 px-4 py-2.5 text-xs font-semibold text-white hover:bg-red-800"
+            className="rounded-full bg-linear-to-b from-red-500 to-red-700 px-4 py-2.5 text-xs font-semibold text-white shadow-[0_8px_20px_-8px_rgb(185_28_28/0.6)] hover:brightness-110"
             href="/business/requests/new"
           >
             Schedule inspection
@@ -141,7 +141,7 @@ const BusinessDashboardPage = () => (
         </div>
       </div>
 
-      <div className="order-3 xl:order-none xl:col-start-2 xl:row-start-2">
+      <div className="order-3 xl:order-none xl:col-start-2 xl:row-start-2 xl:self-start">
         <InstrumentDigitalPassport />
       </div>
     </div>

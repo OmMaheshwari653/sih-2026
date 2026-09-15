@@ -1,5 +1,6 @@
 import { BellRing, IdCard, QrCode, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { QrGlyph } from "@/components/brand/QrGlyph";
 import { StatusBadge } from "@/components/ui/Badge";
 import { Panel } from "@/components/ui/Panel";
 import { instrumentById } from "@/lib/data";
@@ -14,20 +15,8 @@ const InstrumentDigitalPassport = () => {
         title="Instrument digital passport"
       >
         <div className="flex items-start gap-4">
-          {/* Stand-in for the generated QR seal artwork */}
-          <div className="grid size-20 shrink-0 grid-cols-5 gap-px rounded-gov border border-line bg-surface p-1.5">
-            {Array.from({ length: 25 }, (_, index) => index).map((cell) => (
-              <span
-                className={
-                  [
-                    0, 1, 2, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24, 3, 9, 11,
-                  ].includes(cell)
-                    ? "bg-navy"
-                    : "bg-transparent"
-                }
-                key={cell}
-              />
-            ))}
+          <div className="size-20 shrink-0 rounded-2xl bg-white p-1.5 text-navy-900 shadow-[0_8px_20px_-10px_rgb(30_41_90/0.4)]">
+            <QrGlyph className="size-full" value={instrument.id} />
           </div>
 
           <dl className="min-w-0 flex-1 space-y-2">

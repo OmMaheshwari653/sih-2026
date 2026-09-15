@@ -41,7 +41,7 @@ const AdminLoginPage = () => (
           const Icon = control.icon;
           return (
             <article
-              className="flex items-start gap-3 rounded-gov border border-line bg-surface p-4"
+              className="flex items-start gap-3 glass rounded-3xl p-4"
               key={control.title}
             >
               <Icon

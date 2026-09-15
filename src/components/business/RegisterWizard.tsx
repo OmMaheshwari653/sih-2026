@@ -167,7 +167,7 @@ export const RegisterWizard = () => {
             </Field>
 
             <div className="sm:col-span-2">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-gov border border-line bg-surface-alt p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/70 bg-white/45 p-4">
                 <div className="flex items-start gap-2.5">
                   <MapPin
                     className="mt-0.5 size-4.5 shrink-0 text-navy"

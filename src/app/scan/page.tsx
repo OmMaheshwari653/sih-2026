@@ -43,21 +43,20 @@ export default function ScanPage() {
           throw new Error("Camera API is not supported");
         }
 
-        const stream =
-          await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: {
-                ideal: "environment",
-              },
-              width: {
-                ideal: 1280,
-              },
-              height: {
-                ideal: 720,
-              },
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: {
+              ideal: "environment",
             },
-            audio: false,
-          });
+            width: {
+              ideal: 1280,
+            },
+            height: {
+              ideal: 720,
+            },
+          },
+          audio: false,
+        });
 
         if (!mounted) {
           stream.getTracks().forEach((track) => {
@@ -91,8 +90,7 @@ export default function ScanPage() {
           setScanning(false);
           stopCamera();
 
-          window.location.href =
-            `/verify/${DUMMY_CERTIFICATE_ID}`;
+          window.location.href = `/verify/${DUMMY_CERTIFICATE_ID}`;
         }, 2000);
       } catch (error) {
         console.error("Camera error:", error);
@@ -136,10 +134,7 @@ export default function ScanPage() {
             className="inline-flex min-h-10 items-center gap-2 rounded-gov border border-line bg-white px-3 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-surface-alt focus:outline-none focus:ring-2 focus:ring-navy-300 sm:px-4 sm:text-sm"
             aria-label="Exit scanner"
           >
-            <ArrowLeft
-              className="size-4"
-              aria-hidden
-            />
+            <ArrowLeft className="size-4" aria-hidden />
             <span>Exit</span>
           </button>
 
@@ -163,10 +158,7 @@ export default function ScanPage() {
         <section className="mb-4 rounded-gov border border-line bg-white p-4 shadow-sm sm:mb-5 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-gov bg-navy text-saffron sm:size-11">
-              <ScanLine
-                className="size-5 sm:size-6"
-                aria-hidden
-              />
+              <ScanLine className="size-5 sm:size-6" aria-hidden />
             </div>
 
             <div className="min-w-0">
@@ -175,9 +167,8 @@ export default function ScanPage() {
               </h1>
 
               <p className="mt-1 max-w-2xl text-xs leading-5 text-ink-muted sm:text-sm">
-                Scan the QR code displayed on the weighing or
-                measuring instrument to view its public
-                verification certificate.
+                Scan the QR code displayed on the weighing or measuring
+                instrument to view its public verification certificate.
               </p>
             </div>
           </div>
@@ -265,10 +256,7 @@ export default function ScanPage() {
               <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
                 <div className="max-w-sm">
                   <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-white/10">
-                    <Camera
-                      className="size-6 text-saffron"
-                      aria-hidden
-                    />
+                    <Camera className="size-6 text-saffron" aria-hidden />
                   </div>
 
                   <h2 className="mt-3 text-sm font-semibold text-white sm:text-base">
@@ -276,8 +264,8 @@ export default function ScanPage() {
                   </h2>
 
                   <p className="mt-1.5 text-xs leading-5 text-white/60 sm:text-sm">
-                    Please allow camera access in your
-                    browser and reopen the scanner.
+                    Please allow camera access in your browser and reopen the
+                    scanner.
                   </p>
                 </div>
               </div>
@@ -289,10 +277,7 @@ export default function ScanPage() {
                 <div className="flex items-center justify-center gap-2 text-center">
                   {scanning ? (
                     <>
-                      <ScanLine
-                        className="size-4 text-saffron"
-                        aria-hidden
-                      />
+                      <ScanLine className="size-4 text-saffron" aria-hidden />
 
                       <span className="text-xs font-medium text-white sm:text-sm">
                         Scanning for instrument certificate…
@@ -331,8 +316,8 @@ export default function ScanPage() {
                 </p>
 
                 <p className="mt-1 text-[11px] leading-5 text-ink-muted sm:text-xs">
-                  Keep the QR code steady and clearly visible
-                  inside the highlighted frame.
+                  Keep the QR code steady and clearly visible inside the
+                  highlighted frame.
                 </p>
               </div>
             </div>
@@ -351,8 +336,8 @@ export default function ScanPage() {
                 </p>
 
                 <p className="mt-1 text-[11px] leading-5 text-ink-muted sm:text-xs">
-                  The certificate contains the public
-                  verification details of the instrument.
+                  The certificate contains the public verification details of
+                  the instrument.
                 </p>
               </div>
             </div>

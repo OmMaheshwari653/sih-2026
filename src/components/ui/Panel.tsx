@@ -10,9 +10,8 @@ type PanelProps = {
 };
 
 /**
- * The single content container used across the portal. A flat 1px rule and a
- * navy accent on the heading keeps the surface closer to a printed government
- * form than to a floating web card.
+ * The single content container used across the portal — a sheet of liquid
+ * glass that lets the page aurora tint through.
  */
 export const Panel = ({
   title,
@@ -22,24 +21,24 @@ export const Panel = ({
   className = "",
   bodyClassName = "",
 }: PanelProps) => (
-  <section className={`rounded-gov border border-line bg-surface ${className}`}>
+  <section className={`glass rounded-3xl ${className}`}>
     {title ? (
-      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line-soft px-4 py-3">
-        <div className="border-l-[3px] border-navy pl-2.5">
-          <h2 className="text-sm font-semibold tracking-tight text-ink">
-            {title}
-          </h2>
-          {hint ? <p className="text-[11px] text-ink-muted">{hint}</p> : null}
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line-soft px-5 py-3.5">
+        <div>
+          <h2 className="text-[15px] font-semibold text-ink">{title}</h2>
+          {hint ? (
+            <p className="mt-0.5 text-xs text-ink-muted">{hint}</p>
+          ) : null}
         </div>
         {action}
       </header>
     ) : null}
-    <div className={bodyClassName || "p-4"}>{children}</div>
+    <div className={bodyClassName || "p-5"}>{children}</div>
   </section>
 );
 
 export const SectionLabel = ({ children }: { children: ReactNode }) => (
-  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+  <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-ink-muted">
     {children}
   </p>
 );

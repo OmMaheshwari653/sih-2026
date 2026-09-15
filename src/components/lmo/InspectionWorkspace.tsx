@@ -17,7 +17,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { Input, Textarea } from "@/components/ui/Field";
+import { Textarea } from "@/components/ui/Field";
 import { DataRow, Panel } from "@/components/ui/Panel";
 import { type Inspection, instrumentById } from "@/lib/data";
 
@@ -116,7 +116,7 @@ export const InspectionWorkspace = ({
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
-  <div className="min-w-0 space-y-4">
+      <div className="min-w-0 space-y-4">
         {/* ------------------------------------------------ Geo-fence gate */}
         <section
           className={`rounded-gov border p-4 ${

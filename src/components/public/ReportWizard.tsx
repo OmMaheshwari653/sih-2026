@@ -88,7 +88,7 @@ export const ReportWizard = () => {
   return (
     <>
       {/* Stepper */}
-      <ol className="mb-4 flex overflow-hidden rounded-gov border border-line bg-surface">
+      <ol className="mb-4 flex overflow-hidden glass rounded-3xl">
         {steps.map((label, index) => {
           const done = index < step;
           const active = index === step;
@@ -104,7 +104,7 @@ export const ReportWizard = () => {
                   done
                     ? "bg-india-green text-white"
                     : active
-                      ? "bg-navy text-white"
+                      ? "btn-ink"
                       : "bg-surface-alt text-ink-muted"
                 }`}
               >
@@ -209,7 +209,7 @@ export const ReportWizard = () => {
               <div className="flex flex-wrap gap-3">
                 {files.map((file) => (
                   <div
-                    className="flex size-24 flex-col items-center justify-center rounded-gov border border-line bg-surface-alt text-[10px] text-ink-muted"
+                    className="flex size-24 flex-col items-center justify-center rounded-2xl border border-white/70 bg-white/45 text-[10px] text-ink-muted"
                     key={file}
                   >
                     <ImagePlus className="size-5" aria-hidden />
@@ -236,7 +236,7 @@ export const ReportWizard = () => {
               </p>
             </div>
 
-            <div className="rounded-gov border border-line bg-surface-alt p-3.5">
+            <div className="rounded-2xl border border-white/70 bg-white/45 p-3.5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold text-ink">

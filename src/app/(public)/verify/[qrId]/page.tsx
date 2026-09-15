@@ -8,31 +8,19 @@ import {
   ScanLine,
   ShieldAlert,
   ShieldCheck,
-  Stamp,
 } from "lucide-react";
 import Link from "next/link";
+import { SealArt } from "@/components/illustrations/StepArt";
 import { DataRow, Panel } from "@/components/ui/Panel";
-import { instruments } from "@/lib/data";
+import { resolveInstrument } from "@/lib/qr";
 
 export const metadata = { title: "Instrument Verification" };
-
-const resolve = (raw: string) => {
-  const key = decodeURIComponent(raw).toUpperCase();
-  return (
-    instruments.find(
-      (item) =>
-        item.id.toUpperCase() === key ||
-        item.serial.toUpperCase() === key ||
-        item.certificateId?.toUpperCase() === key,
-    ) ?? null
-  );
-};
 
 export default async function VerifyPage({
   params,
 }: PageProps<"/verify/[qrId]">) {
   const { qrId } = await params;
-  const instrument = resolve(qrId);
+  const instrument = resolveInstrument(qrId);
   const certified = instrument?.status === "valid";
   const expiring = instrument?.status === "expiring";
 
@@ -47,33 +35,50 @@ export default async function VerifyPage({
           : "Rejected on last inspection";
 
   const bannerClass = !instrument
-    ? "bg-red-700"
+    ? "from-red-500 via-red-600 to-rose-800"
     : certified
-      ? "bg-india-green"
+      ? "from-emerald-400 via-emerald-600 to-teal-800"
       : expiring
-        ? "bg-amber-600"
-        : "bg-red-700";
+        ? "from-amber-400 via-orange-500 to-orange-700"
+        : "from-red-500 via-red-600 to-rose-800";
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
-      <p className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-        <ScanLine className="size-3.5" aria-hidden />
-        Public verification result
-      </p>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+          <ScanLine className="size-3.5" aria-hidden />
+          Public verification result
+        </p>
+        <Link
+          className="glass inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-white"
+          href="/verify"
+        >
+          <ScanLine className="size-3.5" aria-hidden />
+          Scan another
+        </Link>
+      </div>
 
       {/* Status banner — the one thing a customer reads in two seconds. */}
-      <div className={`rounded-t-gov px-5 py-6 text-white ${bannerClass}`}>
-        <div className="flex items-start gap-3.5">
-          {certified ? (
-            <ShieldCheck className="size-9 shrink-0" aria-hidden />
-          ) : (
-            <ShieldAlert className="size-9 shrink-0" aria-hidden />
-          )}
+      <div
+        className={`relative overflow-hidden rounded-t-4xl bg-linear-to-br px-6 py-7 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.35)] ${bannerClass} ${instrument ? "" : "rounded-b-4xl"}`}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-white/20 blur-3xl"
+        />
+        <div className="relative flex items-start gap-4">
+          <span className="glass-dark flex size-14 shrink-0 items-center justify-center rounded-2xl">
+            {certified ? (
+              <ShieldCheck className="size-7" aria-hidden />
+            ) : (
+              <ShieldAlert className="size-7" aria-hidden />
+            )}
+          </span>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/75">
               Status of this weighing instrument
             </p>
-            <h1 className="font-serif text-2xl font-bold leading-tight sm:text-3xl">
+            <h1 className="mt-1 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
               {headline}
             </h1>
             <p className="num mt-1 text-xs text-white/80">
@@ -85,7 +90,7 @@ export default async function VerifyPage({
 
       {instrument ? (
         <>
-          <div className="rounded-b-gov border border-t-0 border-line bg-surface p-5">
+          <div className="glass rounded-b-4xl border-t-0 p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-ink">
@@ -101,15 +106,8 @@ export default async function VerifyPage({
                 </p>
               </div>
 
-              {/* Stylised tamper-evident seal */}
-              <div className="flex size-24 shrink-0 flex-col items-center justify-center rounded-full border-2 border-dashed border-navy/35 text-center">
-                <Stamp className="size-6 text-navy" aria-hidden />
-                <p className="mt-1 px-2 text-[8px] font-bold uppercase leading-tight tracking-wide text-navy">
-                  Legal Metrology
-                  <br />
-                  Digital Seal
-                </p>
-              </div>
+              {/* Animated tamper-evident seal */}
+              <SealArt className="size-24 shrink-0" />
             </div>
 
             <dl className="mt-5">
@@ -210,7 +208,7 @@ export default async function VerifyPage({
           </div>
         </>
       ) : (
-        <div className="rounded-b-gov border border-t-0 border-line bg-surface p-5">
+        <div className="glass rounded-b-4xl border-t-0 p-6">
           <p className="text-sm leading-6 text-ink">
             No stamping record exists against{" "}
             <span className="num font-semibold">

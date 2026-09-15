@@ -28,7 +28,7 @@ export const LmoLoginForm = () => {
   };
 
   return (
-    <div className="rounded-gov border border-line bg-surface p-5 sm:p-6">
+    <div className="glass rounded-3xl p-5 sm:p-6">
       <div className="space-y-4">
         <Field
           hint="As printed on your departmental identity card."

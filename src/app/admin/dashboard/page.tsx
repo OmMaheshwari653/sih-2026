@@ -181,17 +181,17 @@ const AdminDashboardPage = () => (
             const pendingPct = (month.pending / maxRevenue) * 100;
             return (
               <div
-                className="flex flex-1 flex-col items-center gap-1.5"
+                className="flex h-full flex-1 flex-col items-center gap-1.5"
                 key={month.month}
               >
-                <div className="flex h-full w-full flex-col justify-end gap-0.5">
+                <div className="flex min-h-0 w-full max-w-9 flex-1 flex-col justify-end gap-0.5">
                   <div
-                    className="w-full rounded-t-[2px] bg-amber-300"
+                    className="w-full rounded-t-lg bg-linear-to-b from-amber-200 to-amber-300"
                     style={{ height: `${pendingPct}%` }}
                     title={`Pending ₹${month.pending} lakh`}
                   />
                   <div
-                    className="w-full bg-navy"
+                    className="w-full rounded-b-lg bg-linear-to-b from-indigo-500 to-navy"
                     style={{ height: `${collectedPct}%` }}
                     title={`Collected ₹${month.collected} lakh`}
                   />
@@ -206,10 +206,10 @@ const AdminDashboardPage = () => (
 
         <div className="mt-3 flex flex-wrap items-center gap-4 border-t border-line-soft pt-3 text-[11px] text-ink-muted">
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[2px] bg-navy" /> Collected
+            <span className="size-2.5 rounded-full bg-indigo-500" /> Collected
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[2px] bg-amber-300" /> Pending
+            <span className="size-2.5 rounded-full bg-amber-300" /> Pending
           </span>
           <span className="num ml-auto font-semibold text-ink">
             May shortfall {rupees(16800000)}

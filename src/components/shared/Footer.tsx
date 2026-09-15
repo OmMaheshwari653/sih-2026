@@ -1,10 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
+import { LogoMark } from "@/components/brand/Logo";
 
 const columns = [
   {
     title: "Citizen Services",
     links: [
-      { label: "Verify a Scale by QR", href: "/verify/LM-UP-PRY-000123" },
+      { label: "Scan & Verify a Scale", href: "/verify" },
       { label: "Report Under-weighing", href: "/report-fraud" },
       { label: "Mobile Verification Camps", href: "/camps" },
       { label: "Know Your Rights", href: "/#rights" },
@@ -26,7 +28,6 @@ const columns = [
     title: "Department",
     links: [
       { label: "Officer Login", href: "/auth/lmo/login" },
-      { label: "Mandi Gatekeeper Scan", href: "/gatekeeper/scan" },
       { label: "State Command Centre", href: "/admin/dashboard" },
       { label: "E-Challan Feed", href: "/admin/challans" },
     ],
@@ -43,48 +44,87 @@ const columns = [
 ];
 
 const Footer = () => (
-  <footer className="mt-auto bg-navy-900 text-white" id="footer">
-    <div className="mx-auto w-full max-w-360 px-4 py-8 sm:px-6">
-      <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
-        {columns.map((column) => (
-          <nav key={column.title}>
-            <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-saffron">
-              {column.title}
-            </h3>
-            <ul className="space-y-2">
-              {column.links.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    className="text-xs text-white/75 hover:text-white hover:underline"
-                    href={link.href}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
+  <footer className="mt-auto px-3 pb-3 pt-12 sm:px-4" id="footer">
+    <div className="aurora-dark relative mx-auto w-full max-w-360 overflow-hidden rounded-4xl text-white">
+      <div
+        aria-hidden
+        className="blob pointer-events-none absolute -right-40 -top-40 size-120 rounded-full bg-indigo-500/25 blur-3xl"
+      />
+      <div className="relative grid gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.1fr_2fr]">
+        <div>
+          <div className="flex items-center gap-3">
+            <LogoMark className="size-11" />
+            <p className="text-lg font-semibold leading-tight tracking-tight">
+              Legal Metrology
+              <span className="block text-sm font-normal text-white/55">
+                Online Verification System
+              </span>
+            </p>
+          </div>
+          <p className="mt-4 max-w-xs text-[13px] leading-5 text-white/60">
+            One verification record shared by traders, officers and citizens —
+            from stamping to the shop counter.
+          </p>
+          <a
+            className="glass-dark mt-5 inline-flex rounded-full px-3.5 py-1.5 text-xs transition-colors hover:bg-white/15"
+            data-magnetic
+            href="tel:18001140000"
+          >
+            Helpline{" "}
+            <span className="num ml-1.5 font-semibold">1800-11-4000</span>
+          </a>
+          <div className="mt-6 w-fit rounded-2xl bg-white px-3 py-2">
+            <Image
+              alt="Department of Consumer Affairs, Government of India"
+              className="h-9 w-auto"
+              height={279}
+              src="/ministry.png"
+              width={830}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {columns.map((column) => (
+            <nav key={column.title}>
+              <h3 className="mb-3 text-[11px] font-medium uppercase tracking-[0.12em] text-white/45">
+                {column.title}
+              </h3>
+              <ul className="space-y-2.5">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      className="text-[13px] text-white/75 transition-colors hover:text-white"
+                      href={link.href}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-8 grid gap-4 border-t border-white/15 pt-5 text-[11px] text-white/60 lg:grid-cols-[1fr_auto]">
-        <p>
-          Content owned and maintained by the Department of Consumer Affairs,
-          Ministry of Consumer Affairs, Food &amp; Public Distribution,
-          Government of India. Site designed and hosted by the National
-          Informatics Centre.
-        </p>
-        <p className="lg:text-right">
-          Helpline 1800-11-4000 · Last updated 20 May 2025 · Version 2.4.1
-        </p>
-      </div>
-    </div>
-
-    <div className="border-t border-white/10 bg-black/25">
-      <p className="mx-auto w-full max-w-360 px-4 py-3 text-[11px] text-white/55 sm:px-6">
-        © 2025 Department of Consumer Affairs. All rights reserved. This is a
-        Smart India Hackathon prototype interface.
+      <p
+        aria-hidden
+        className="relative select-none px-4 text-center text-[15vw] font-semibold leading-[0.85] tracking-[-0.06em] text-white/[0.07] xl:text-[12rem]"
+        data-split="lines"
+      >
+        Verified.
       </p>
+
+      <div className="relative flex flex-col gap-2 border-t border-white/10 px-6 py-5 text-[11px] text-white/50 sm:px-10 lg:flex-row lg:items-center lg:justify-between">
+        <p>
+          © 2025 Department of Consumer Affairs, Government of India · Hosted by
+          NIC · Smart India Hackathon prototype
+        </p>
+        <p className="flex items-center gap-2">
+          <span className="tricolor-rule h-1 w-8 rounded-full" aria-hidden />
+          Last updated 20 May 2025 · v2.4.1
+        </p>
+      </div>
     </div>
   </footer>
 );

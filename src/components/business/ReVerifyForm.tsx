@@ -234,7 +234,7 @@ export const ReVerifyForm = ({ instrument }: { instrument: Instrument }) => {
                     rows={3}
                   />
                 </Field>
-                <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3 rounded-gov border border-line bg-surface p-3.5">
+                <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3 glass rounded-3xl p-3.5">
                   <p className="text-[12px] leading-4.5 text-ink-muted">
                     {geo
                       ? "New geo-fence pinned at 25.4501° N, 81.8210° E. The old fence is released on approval."

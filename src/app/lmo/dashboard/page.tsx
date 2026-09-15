@@ -7,6 +7,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
+import { RouteMap } from "@/components/lmo/RouteMap";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Panel } from "@/components/ui/Panel";
@@ -120,43 +121,7 @@ const LmoDashboardPage = () => (
           hint="Optimised sequence for today"
           title="Route map"
         >
-          <div className="relative h-64 overflow-hidden bg-[#e7edf5]">
-            <div
-              aria-hidden
-              className="absolute inset-0 opacity-70 [background-image:linear-gradient(#c9d6e6_1px,transparent_1px),linear-gradient(90deg,#c9d6e6_1px,transparent_1px)] [background-size:32px_32px]"
-            />
-            <svg
-              aria-hidden
-              className="absolute inset-0 size-full"
-              viewBox="0 0 100 100"
-            >
-              <title>Optimised inspection route</title>
-              <path
-                d="M18 78 L38 60 L62 66 L80 30"
-                fill="none"
-                stroke="#0b2b5c"
-                strokeDasharray="4 3"
-                strokeWidth="1.6"
-              />
-            </svg>
-            {[
-              { top: "78%", left: "18%", n: 1 },
-              { top: "60%", left: "38%", n: 2 },
-              { top: "66%", left: "62%", n: 3 },
-              { top: "30%", left: "80%", n: 4 },
-            ].map((pin) => (
-              <span
-                className="num absolute flex size-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-navy text-[10px] font-bold text-white ring-3 ring-white"
-                key={pin.n}
-                style={{ top: pin.top, left: pin.left }}
-              >
-                {pin.n}
-              </span>
-            ))}
-            <span className="absolute bottom-3 left-3 rounded-gov border border-line bg-white/95 px-2.5 py-1.5 text-[10px] text-ink-muted">
-              Start: Circle Office, Civil Lines · 19.6 km total
-            </span>
-          </div>
+          <RouteMap />
         </Panel>
 
         <Panel title="Enforcement alerts">

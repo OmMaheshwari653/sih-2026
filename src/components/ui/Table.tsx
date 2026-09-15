@@ -16,10 +16,10 @@ export const TableWrap = ({
 
 export const Thead = ({ columns }: { columns: string[] }) => (
   <thead>
-    <tr className="border-b border-line bg-surface-alt">
+    <tr className="border-b border-line">
       {columns.map((column) => (
         <th
-          className="px-4 py-2.5 font-semibold uppercase tracking-wide text-[10.5px] text-ink-muted"
+          className="px-5 py-3 text-[10.5px] font-medium uppercase tracking-[0.08em] text-ink-muted"
           key={column}
           scope="col"
         >
@@ -31,7 +31,9 @@ export const Thead = ({ columns }: { columns: string[] }) => (
 );
 
 export const Tbody = ({ children }: { children: ReactNode }) => (
-  <tbody className="divide-y divide-line-soft text-ink">{children}</tbody>
+  <tbody className="divide-y divide-line-soft text-ink [&>tr:hover]:bg-white/45 [&>tr]:transition-colors">
+    {children}
+  </tbody>
 );
 
 export const Td = ({
@@ -40,4 +42,4 @@ export const Td = ({
 }: {
   children: ReactNode;
   className?: string;
-}) => <td className={`px-4 py-3 align-middle ${className}`}>{children}</td>;
+}) => <td className={`px-5 py-3.5 align-middle ${className}`}>{children}</td>;

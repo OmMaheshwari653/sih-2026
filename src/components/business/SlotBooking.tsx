@@ -236,7 +236,7 @@ export const SlotBooking = () => {
                       <button
                         className={`num w-full rounded-gov border px-2 py-1.5 text-[11px] font-medium transition-colors ${
                           slot === id
-                            ? "border-navy bg-navy text-white"
+                            ? "border-navy btn-ink"
                             : "border-line text-ink-muted hover:border-navy/40 hover:text-ink"
                         }`}
                         key={window}

@@ -1,74 +1,74 @@
 import {
   ArrowRight,
+  ArrowUpRight,
   BadgeCheck,
-  Building2,
   CalendarClock,
-  ClipboardCheck,
-  FileWarning,
-  Gavel,
-  MapPin,
   Megaphone,
   QrCode,
-  Scale,
   ScanLine,
-  ShieldCheck,
   Truck,
-  UserCog,
-  Users,
 } from "lucide-react";
 import Link from "next/link";
-import { LookupBar } from "@/components/public/LookupBar";
+import { Hero } from "@/components/home/Hero";
+import {
+  ConsumerArt,
+  OfficerArt,
+  TraderArt,
+} from "@/components/illustrations/RoleArt";
+import {
+  ApplyArt,
+  GaugeArt,
+  GeoArt,
+  SealArt,
+} from "@/components/illustrations/StepArt";
+import { Marquee } from "@/components/motion/Marquee";
 import { camps } from "@/lib/data";
-
-const counters = [
-  { value: "1,42,08,764", label: "Instruments stamped digitally" },
-  { value: "24,915", label: "Field officers on the network" },
-  { value: "38,204", label: "Citizen fraud reports actioned" },
-  { value: "0", label: "Sheets of manual paperwork" },
-];
 
 const roles = [
   {
-    title: "I am a Trader / Business",
+    title: "Trader / Business",
     body: "Register instruments, book a verification slot, pay the statutory fee and hold every certificate in a digital vault.",
     href: "/auth/business/login",
     cta: "Enter Business Portal",
-    icon: Building2,
+    art: TraderArt,
+    tint: "from-indigo-100/80 to-sky-50/40",
   },
   {
-    title: "I am a Legal Metrology Officer",
+    title: "Legal Metrology Officer",
     body: "Geo-fenced field stamping, auto-computed permissible error, and instant digital seal allocation from your phone.",
     href: "/auth/lmo/login",
     cta: "Officer Sign-in",
-    icon: UserCog,
+    art: OfficerArt,
+    tint: "from-emerald-100/80 to-teal-50/40",
   },
   {
-    title: "I am a Consumer",
+    title: "Consumer",
     body: "Scan the QR sticker on any shop scale to see whether it is legally stamped — and report it in one tap if it is not.",
-    href: "/verify/LM-UP-PRY-000123",
-    cta: "Verify a Scale",
-    icon: Users,
+    href: "/verify",
+    cta: "Scan a Scale",
+    art: ConsumerArt,
+    tint: "from-orange-100/80 to-amber-50/40",
   },
 ];
 
 const flow = [
   {
-    icon: ClipboardCheck,
+    art: ApplyArt,
     title: "Apply online",
     body: "Trader files a stamping or re-verification request against a specific instrument serial number and pays the fee.",
   },
   {
-    icon: MapPin,
+    art: GeoArt,
     title: "Geo-fenced inspection",
     body: "The Verify action unlocks only when the officer's live GPS is within 50 m of the registered premises.",
   },
   {
-    icon: ShieldCheck,
+    art: GaugeArt,
     title: "Auto pass / fail",
     body: "Readings at 10%, 50% and 100% test loads are checked against the Maximum Permissible Error for the accuracy class.",
   },
   {
-    icon: QrCode,
+    art: SealArt,
     title: "Digital seal issued",
     body: "A tamper-evident QR seal is bound to the record. Any citizen can scan it and read the same audit trail.",
   },
@@ -94,10 +94,57 @@ const rights = [
 ];
 
 const notices = [
-  "Tatkal re-verification window for fuel dispensers extended till 30 June 2025.",
-  "Mobile verification vans deployed across 14 wholesale mandis in Prayagraj division.",
-  "Revised verification fee schedule (Notification S.O. 1142/2025) effective 01 April 2025.",
+  "Tatkal re-verification window for fuel dispensers extended till 30 June 2025",
+  "Mobile verification vans deployed across 14 wholesale mandis in Prayagraj division",
+  "Revised verification fee schedule (Notification S.O. 1142/2025) effective 01 April 2025",
 ];
+
+const instrumentsCovered = [
+  "Weighing scales",
+  "Fuel dispensers",
+  "Jewellery balances",
+  "Milk fat meters",
+  "Platform scales",
+  "Taxi meters",
+  "Water meters",
+  "Weighbridges",
+];
+
+const SectionTitle = ({
+  eyebrow,
+  title,
+  body,
+  light,
+}: {
+  eyebrow: string;
+  title: string;
+  body?: string;
+  light?: boolean;
+}) => (
+  <div className="max-w-2xl">
+    <p
+      className={`inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] ${light ? "text-sky-300" : "text-navy-500"}`}
+      data-reveal
+    >
+      <span className="h-px w-6 bg-current" />
+      {eyebrow}
+    </p>
+    <h2
+      className={`mt-3 text-3xl font-semibold tracking-tight sm:text-5xl ${light ? "text-white" : "text-ink"}`}
+      data-split="lines"
+    >
+      {title}
+    </h2>
+    {body ? (
+      <p
+        className={`mt-4 text-[15px] leading-7 ${light ? "text-white/60" : "text-ink-muted"}`}
+        data-reveal
+      >
+        {body}
+      </p>
+    ) : null}
+  </div>
+);
 
 const HomePage = () => {
   const activeCamps = camps
@@ -106,131 +153,95 @@ const HomePage = () => {
 
   return (
     <>
-      {/* ---------------------------------------------------------------- Hero */}
-      <section className="relative overflow-hidden bg-navy text-white">
-        <Scale
-          aria-hidden
-          className="pointer-events-none absolute -right-10 top-1/2 size-[26rem] -translate-y-1/2 text-white/4"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:repeating-linear-gradient(90deg,#fff_0_1px,transparent_1px_64px)]"
-        />
+      <Hero />
 
-        <div className="relative mx-auto grid w-full max-w-360 gap-9 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-saffron/40 bg-saffron/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-saffron">
-              <BadgeCheck className="size-3.5" aria-hidden />
-              Legal Metrology Act, 2009 · Digital Compliance
-            </p>
-
-            <h1 className="mt-4 font-serif text-3xl font-bold leading-[1.15] sm:text-4xl lg:text-[2.75rem]">
-              Every weighing scale in India,
-              <span className="text-saffron"> verifiable in one scan.</span>
-            </h1>
-
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
-              A single ecosystem connecting traders, Legal Metrology Officers
-              and citizens — replacing lead seals, paper diaries and desk-issued
-              certificates with geo-fenced inspections and a public audit trail.
-            </p>
-
-            <div className="mt-6 max-w-2xl">
-              <LookupBar />
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                className="inline-flex items-center gap-2 rounded-gov bg-white px-4 py-2.5 text-sm font-semibold text-navy hover:bg-white/90"
-                href="/report-fraud"
+      {/* ------------------------------------------------------------ Tickers */}
+      <section className="mx-auto w-full max-w-360 px-3 pt-4 sm:px-4">
+        <div className="glass flex items-center gap-3 overflow-hidden rounded-full py-2 pl-2">
+          <span className="relative z-10 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-orange-400/15 px-3 py-1.5 text-[11px] font-semibold text-orange-700">
+            <Megaphone className="size-3.5" aria-hidden />
+            Notices
+          </span>
+          <Marquee className="min-w-0 flex-1" speed={45}>
+            {notices.map((notice) => (
+              <span
+                className="flex items-center gap-3 pr-10 text-xs text-ink-muted"
+                key={notice}
               >
-                <FileWarning className="size-4" aria-hidden />
-                Report an under-weighing shop
-              </Link>
-              <Link
-                className="inline-flex items-center gap-2 rounded-gov border border-white/25 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
-                href="/camps"
-              >
-                <Truck className="size-4" aria-hidden />
-                Find a verification camp
-              </Link>
-            </div>
-          </div>
-
-          <div className="self-center rounded-gov border border-white/15 bg-white/6 p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-saffron">
-              National Position · FY 2024–25
-            </p>
-            <dl className="mt-4 divide-y divide-white/12">
-              {counters.map((counter) => (
-                <div
-                  className="flex items-baseline justify-between gap-4 py-3"
-                  key={counter.label}
-                >
-                  <dd className="num text-2xl font-bold sm:text-3xl">
-                    {counter.value}
-                  </dd>
-                  <dt className="text-right text-[11px] leading-4 text-white/65">
-                    {counter.label}
-                  </dt>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-3 text-[10px] text-white/45">
-              Indicative prototype figures compiled for demonstration.
-            </p>
-          </div>
+                <span className="size-1.5 rounded-full bg-navy-500/50" />
+                {notice}
+              </span>
+            ))}
+          </Marquee>
         </div>
       </section>
 
-      {/* ------------------------------------------------------------- Notices */}
-      <section className="border-b border-line bg-amber-50">
-        <div className="mx-auto flex w-full max-w-360 flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-          <span className="inline-flex w-fit items-center gap-1.5 rounded-[3px] bg-navy px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-            <Megaphone className="size-3" aria-hidden />
-            Notices
-          </span>
-          <ul className="flex flex-1 flex-col gap-1 text-xs text-ink sm:flex-row sm:flex-wrap sm:gap-x-6">
-            {notices.map((notice) => (
-              <li className="sm:list-disc sm:first:list-none" key={notice}>
-                {notice}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* ---------------------------------------------------------- Statement */}
+      <section className="mx-auto w-full max-w-5xl px-4 py-24 sm:px-6 sm:py-32">
+        <p
+          className="text-center text-3xl font-semibold leading-[1.2] tracking-[-0.03em] text-ink sm:text-5xl"
+          data-scrub-words
+        >
+          Short weighing quietly costs households every single day. A stamped
+          scale is your right — and now anyone can check it in one scan, before
+          they pay.
+        </p>
+        <Marquee className="mt-14" reverse speed={30}>
+          {instrumentsCovered.map((item) => (
+            <span
+              className="glass mr-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-ink"
+              key={item}
+            >
+              <BadgeCheck className="size-4 text-emerald-600" aria-hidden />
+              {item}
+            </span>
+          ))}
+        </Marquee>
       </section>
 
       {/* --------------------------------------------------------- Role picker */}
-      <section className="mx-auto w-full max-w-360 px-4 py-10 sm:px-6">
-        <h2 className="font-serif text-2xl font-bold text-ink">
-          Choose how you want to use the portal
-        </h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          Three interfaces, one verification record.
-        </p>
+      <section className="mx-auto w-full max-w-360 px-4 pb-24 sm:px-6">
+        <SectionTitle
+          body="Three interfaces, one verification record. Pick the one that fits you."
+          eyebrow="Get started"
+          title="How do you want to use the portal?"
+        />
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 lg:grid-cols-3">
           {roles.map((role) => {
-            const Icon = role.icon;
+            const Art = role.art;
             return (
               <Link
-                className="group flex flex-col rounded-gov border border-line bg-surface p-5 transition-colors hover:border-navy"
+                className="glass spotlight group flex flex-col overflow-hidden rounded-4xl transition-shadow duration-500 hover:shadow-[0_40px_80px_-30px_rgb(30_41_90/0.35)]"
+                data-reveal
+                data-tilt="6"
                 href={role.href}
                 key={role.title}
               >
-                <span className="flex size-11 items-center justify-center rounded-gov bg-navy/8 text-navy">
-                  <Icon className="size-5.5" aria-hidden />
-                </span>
-                <h3 className="mt-3.5 text-base font-semibold text-ink">
-                  {role.title}
-                </h3>
-                <p className="mt-1.5 flex-1 text-[13px] leading-5 text-ink-muted">
-                  {role.body}
-                </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy-500 group-hover:gap-2.5">
-                  {role.cta}
-                  <ArrowRight className="size-3.5 transition-all" aria-hidden />
-                </span>
+                <div
+                  className={`relative m-2 flex h-48 items-end justify-center overflow-hidden rounded-3xl bg-linear-to-br ${role.tint}`}
+                >
+                  <Art className="h-44 w-auto transition-transform duration-700 ease-glass group-hover:scale-110" />
+                  <span className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-white/80 text-ink-muted shadow-sm transition-all duration-500 ease-glass group-hover:rotate-45 group-hover:bg-ink group-hover:text-white">
+                    <ArrowUpRight className="size-4" aria-hidden />
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col px-6 pb-6 pt-4">
+                  <p className="text-xs font-medium text-ink-muted">I am a</p>
+                  <h3 className="text-xl font-semibold text-ink">
+                    {role.title}
+                  </h3>
+                  <p className="mt-2 flex-1 text-sm leading-6 text-ink-muted">
+                    {role.body}
+                  </p>
+                  <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                    {role.cta}
+                    <ArrowRight
+                      className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden
+                    />
+                  </span>
+                </div>
               </Link>
             );
           })}
@@ -238,50 +249,90 @@ const HomePage = () => {
       </section>
 
       {/* ------------------------------------------------------------ How flow */}
-      <section className="border-y border-line bg-surface">
-        <div className="mx-auto w-full max-w-360 px-4 py-10 sm:px-6">
-          <h2 className="font-serif text-2xl font-bold text-ink">
-            How a fraud-proof verification works
-          </h2>
+      <section
+        className="relative overflow-hidden px-3 sm:px-4"
+        data-hscroll
+        data-motion-manual
+      >
+        <div className="aurora-dark mx-auto w-full max-w-360 overflow-hidden rounded-4xl px-5 py-14 text-white sm:px-10 lg:py-16">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <SectionTitle
+              body="From application to the citizen's phone, every step is recorded once and can't be quietly edited later."
+              eyebrow="The process"
+              light
+              title="How a fraud-proof verification works"
+            />
+            <div className="hidden w-56 lg:block">
+              <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-white/40">
+                Scroll to follow
+              </p>
+              <div className="h-1 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full origin-left rounded-full bg-linear-to-r from-indigo-400 via-sky-300 to-orange-300"
+                  data-hscroll-bar
+                />
+              </div>
+            </div>
+          </div>
 
-          <ol className="mt-6 grid gap-px overflow-hidden rounded-gov border border-line bg-line md:grid-cols-2 xl:grid-cols-4">
+          <ol
+            className="mt-12 grid gap-4 sm:grid-cols-2 lg:flex lg:w-max lg:gap-5"
+            data-hscroll-track
+          >
             {flow.map((step, index) => {
-              const Icon = step.icon;
+              const Art = step.art;
               return (
-                <li className="bg-surface p-5" key={step.title}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="num flex size-7 items-center justify-center rounded-full bg-navy text-xs font-bold text-white">
-                      {index + 1}
+                <li
+                  className="glass-dark relative flex flex-col rounded-4xl p-6 lg:w-[26rem] lg:p-8"
+                  key={step.title}
+                >
+                  <div className="flex items-start justify-between">
+                    <Art className="size-24 lg:size-28" />
+                    <span className="num text-6xl font-semibold tracking-tighter text-white/8 lg:text-8xl">
+                      0{index + 1}
                     </span>
-                    <Icon className="size-4.5 text-navy-500" aria-hidden />
                   </div>
-                  <h3 className="mt-3 text-sm font-semibold text-ink">
+                  <h3 className="mt-8 text-xl font-semibold lg:text-2xl">
                     {step.title}
                   </h3>
-                  <p className="mt-1.5 text-[13px] leading-5 text-ink-muted">
+                  <p className="mt-3 text-sm leading-6 text-white/60 lg:text-[15px] lg:leading-7">
                     {step.body}
                   </p>
                 </li>
               );
             })}
+            <li className="hidden flex-col justify-center rounded-4xl border border-dashed border-white/15 p-8 lg:flex lg:w-[22rem]">
+              <p className="text-2xl font-semibold tracking-tight">
+                That&apos;s it. No paper, no desk.
+              </p>
+              <Link
+                className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-navy-900"
+                data-magnetic
+                href="/verify/LM-UP-PRY-000123"
+              >
+                <QrCode className="size-4" aria-hidden />
+                See a sealed record
+              </Link>
+            </li>
           </ol>
         </div>
       </section>
 
       {/* ---------------------------------------------------------- Camps + QR */}
-      <section className="mx-auto grid w-full max-w-360 gap-4 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_20rem]">
-        <div className="rounded-gov border border-line bg-surface">
-          <header className="flex items-center justify-between border-b border-line-soft px-4 py-3">
-            <div className="border-l-[3px] border-navy pl-2.5">
-              <h2 className="text-sm font-semibold text-ink">
+      <section className="mx-auto grid w-full max-w-360 gap-4 px-4 py-24 sm:px-6 lg:grid-cols-[1fr_26rem]">
+        <div className="glass flex flex-col rounded-4xl p-2">
+          <header className="flex flex-wrap items-center justify-between gap-3 px-4 pb-3 pt-4">
+            <div>
+              <h2 className="text-xl font-semibold text-ink">
                 Mobile verification camps this week
               </h2>
-              <p className="text-[11px] text-ink-muted">
+              <p className="text-xs text-ink-muted">
                 Street vendors and mandi stalls can get stamped on the spot.
               </p>
             </div>
             <Link
-              className="inline-flex items-center gap-1 text-xs font-semibold text-navy-500 hover:underline"
+              className="inline-flex items-center gap-1 rounded-full bg-white/70 px-3.5 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-white"
+              data-magnetic
               href="/camps"
             >
               All camps
@@ -289,104 +340,148 @@ const HomePage = () => {
             </Link>
           </header>
 
-          <ul className="divide-y divide-line-soft">
+          <ul className="space-y-1.5">
             {activeCamps.map((camp) => (
               <li
-                className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5"
+                className="group flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white/50 px-4 py-4 transition-all duration-300 hover:translate-x-1 hover:bg-white/85"
+                data-reveal
                 key={camp.id}
               >
-                <div>
-                  <p className="text-sm font-semibold text-ink">
-                    {camp.market}
-                  </p>
-                  <p className="text-[11px] text-ink-muted">
-                    {camp.district} · {camp.day}, {camp.date} · {camp.window} ·
-                    Van {camp.van}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-white text-ink/70 shadow-[0_1px_2px_rgb(15_23_42/0.06)] transition-colors group-hover:bg-ink group-hover:text-white">
+                    <Truck className="size-4.5" aria-hidden />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-ink">
+                      {camp.market}
+                    </p>
+                    <p className="text-xs text-ink-muted">
+                      {camp.district} · {camp.day}, {camp.date} · {camp.window}{" "}
+                      · Van {camp.van}
+                    </p>
+                  </div>
                 </div>
                 <span
-                  className={`rounded-[3px] border px-2 py-0.5 text-[11px] font-semibold ${
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                     camp.state === "active"
-                      ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                      : "border-line bg-surface-alt text-ink-muted"
+                      ? "bg-emerald-500/12 text-emerald-700"
+                      : "bg-slate-500/10 text-ink-muted"
                   }`}
                 >
+                  {camp.state === "active" ? (
+                    <span className="relative flex size-2">
+                      <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/70" />
+                      <span className="relative size-2 rounded-full bg-emerald-500" />
+                    </span>
+                  ) : null}
                   {camp.state === "active" ? "Active now" : "Upcoming"}
                 </span>
               </li>
             ))}
           </ul>
+
+          <div className="mt-auto grid grid-cols-3 gap-1.5 pt-1.5">
+            {[
+              ["3", "vans on route today"],
+              ["42", "instruments stamped since 7 AM"],
+              ["₹0", "extra fee at a camp"],
+            ].map(([value, label]) => (
+              <div className="rounded-3xl bg-white/40 px-4 py-4" key={label}>
+                <p className="num text-2xl font-semibold text-ink" data-count>
+                  {value}
+                </p>
+                <p className="mt-0.5 text-[11px] leading-4 text-ink-muted">
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="rounded-gov border border-line bg-navy p-5 text-white">
-          <ScanLine className="size-6 text-saffron" aria-hidden />
-          <h2 className="mt-3 font-serif text-lg font-bold">
+        <div className="aurora-dark relative overflow-hidden rounded-4xl p-6 text-white">
+          <div
+            aria-hidden
+            className="blob absolute -right-20 -top-20 size-64 rounded-full bg-sky-400/25 blur-3xl"
+          />
+          <div className="relative -mx-2 -mt-2 rounded-3xl bg-white/90 p-2">
+            <ConsumerArt className="h-40 w-full" />
+          </div>
+          <h2 className="relative mt-6 text-2xl font-semibold tracking-tight">
             Standing at a shop right now?
           </h2>
-          <p className="mt-1.5 text-[13px] leading-5 text-white/75">
-            Point your phone camera at the green QR sticker pasted on the scale.
-            You will see the stamping date, the officer who verified it and the
-            expiry — before you pay.
+          <p className="relative mt-2 text-sm leading-6 text-white/65">
+            Point your camera at the QR sticker on the scale. See the stamping
+            date, the verifying officer and the expiry — before you pay.
           </p>
           <Link
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-gov bg-white px-4 py-2.5 text-sm font-semibold text-navy hover:bg-white/90"
+            className="relative mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-semibold text-navy-900"
+            href="/verify"
+          >
+            <ScanLine className="size-4" aria-hidden />
+            Open live scanner
+          </Link>
+          <Link
+            className="glass-dark relative mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-colors hover:bg-white/15"
             href="/verify/LM-UP-PRY-000123"
           >
             <QrCode className="size-4" aria-hidden />
-            Open a sample verification
-          </Link>
-          <Link
-            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-gov border border-white/25 px-4 py-2.5 text-sm font-semibold hover:bg-white/10"
-            href="/gatekeeper/scan"
-          >
-            Mandi gatekeeper mode
+            See a sample result
           </Link>
         </div>
       </section>
 
       {/* -------------------------------------------------------------- Rights */}
-      <section className="border-t border-line bg-surface-alt" id="rights">
-        <div className="mx-auto w-full max-w-360 px-4 py-10 sm:px-6">
-          <div className="flex items-center gap-2.5">
-            <Gavel className="size-5 text-navy" aria-hidden />
-            <h2 className="font-serif text-2xl font-bold text-ink">
-              Know your rights
-            </h2>
-          </div>
-          <p className="mt-1 text-sm text-ink-muted">
-            What the law guarantees you at the counter.
-          </p>
+      <section
+        className="mx-auto w-full max-w-360 scroll-mt-24 px-4 sm:px-6"
+        id="rights"
+      >
+        <SectionTitle
+          body="What the law guarantees you at the counter."
+          eyebrow="Consumer protection"
+          title="Know your rights"
+        />
 
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {rights.map((right) => (
-              <article
-                className="rounded-gov border border-line bg-surface p-5"
-                key={right.heading}
-              >
-                <h3 className="text-sm font-semibold text-ink">
-                  {right.heading}
-                </h3>
-                <p className="mt-2 text-[13px] leading-5.5 text-ink-muted">
-                  {right.body}
-                </p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3 rounded-gov border border-navy/20 bg-navy/5 px-4 py-3.5">
-            <CalendarClock className="size-5 text-navy" aria-hidden />
-            <p className="flex-1 text-[13px] text-ink">
-              Instrument validity is typically one year. The portal notifies the
-              trader 30 days before expiry — and flags the instrument publicly
-              the day after.
-            </p>
-            <Link
-              className="rounded-gov bg-navy px-4 py-2 text-xs font-semibold text-white hover:bg-navy-700"
-              href="/business/dashboard"
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {rights.map((right, index) => (
+            <article
+              className="glass spotlight group rounded-4xl p-7"
+              data-reveal
+              data-tilt="4"
+              key={right.heading}
             >
-              See a trader dashboard
-            </Link>
-          </div>
+              <span className="num inline-flex size-10 items-center justify-center rounded-2xl bg-navy-500/10 text-sm font-semibold text-navy-500 transition-colors duration-300 group-hover:bg-navy-500 group-hover:text-white">
+                §{index + 1}
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-ink">
+                {right.heading}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-ink-muted">
+                {right.body}
+              </p>
+            </article>
+          ))}
+        </div>
+
+        <div
+          className="glass-strong mt-4 flex flex-col gap-4 rounded-4xl p-4 sm:flex-row sm:items-center sm:rounded-full sm:py-3 sm:pl-5 sm:pr-3"
+          data-reveal
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy-500/10 text-navy-500">
+            <CalendarClock className="size-5" aria-hidden />
+          </span>
+          <p className="flex-1 text-sm text-ink">
+            Instrument validity is typically one year. Traders are notified 30
+            days before expiry — and the instrument is flagged publicly the day
+            after.
+          </p>
+          <Link
+            className="btn-ink inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:brightness-125"
+            data-magnetic="0.2"
+            href="/business/dashboard"
+          >
+            See a trader dashboard
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
         </div>
       </section>
     </>

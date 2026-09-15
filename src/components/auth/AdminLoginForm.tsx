@@ -21,7 +21,7 @@ export const AdminLoginForm = () => {
   };
 
   return (
-    <div className="rounded-gov border border-line bg-surface p-5 sm:p-6">
+    <div className="glass rounded-3xl p-5 sm:p-6">
       <div className="space-y-4">
         <Field
           hint="As assigned by the department for command access."

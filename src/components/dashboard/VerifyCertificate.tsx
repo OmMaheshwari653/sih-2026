@@ -55,7 +55,7 @@ const VerifyCertificate = () => {
 
       <button
         className="flex w-full items-center justify-center gap-2 rounded-gov border border-line py-3 text-sm font-semibold text-ink hover:bg-surface-alt sm:py-2.5 sm:text-xs"
-        onClick={() => router.push("/verify/LM-UP-PRY-000123")}
+        onClick={() => router.push("/verify")}
         type="button"
       >
         <QrCode className="size-4" aria-hidden />

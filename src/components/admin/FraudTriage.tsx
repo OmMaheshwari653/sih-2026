@@ -133,7 +133,7 @@ export const FraudTriage = () => {
                 (_, index) => index,
               ).map((index) => (
                 <div
-                  className="flex size-24 flex-col items-center justify-center gap-1 rounded-gov border border-line bg-surface-alt text-[10px] text-ink-muted"
+                  className="flex size-24 flex-col items-center justify-center gap-1 rounded-2xl border border-white/70 bg-white/45 text-[10px] text-ink-muted"
                   key={index}
                 >
                   <ImageIcon className="size-5" aria-hidden />
